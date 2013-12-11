@@ -40,21 +40,32 @@ Each hook type can be defined to execute in one of the following stages:
     <th>Description</th>
   </tr>
   <tr>
+    <th>Input</th>
+    <td>
+        Refers to the execution of hooks which do not alter the request or execution chain in any shape or form. These are listener hooks that serve the purpose of signaling or forwarding the actual incomming request.
+  </tr>
+  <tr>
     <th>Pre-Processing</th>
     <td>
-        Refers to execution a hook before the in-processing and post-processing stages. If the hook is a responder then it is expected that it validates and/or normalizes the request content input. If the hook is a listener then it is expected that it signals that processing of the provided content (contains the original content of the request) is about to occurr.
+        Refers to execution a hook before the in-processing and post-processing stages (in the listed order). If the hook is a responder then it is expected that it validates and/or normalizes the request content input. If the hook is a listener then it is expected that it signals or forward the response of the processed (validation and/or normalization) request content that just occured.
     </td>
   </tr>
   <tr>
     <th>In-Processing</th>
     <td>
-        Refers to execution a hook after the pre-processing stage, but before the post-processing stage. If the hook is a responder then it is expected that it processes the request. If the hook is a listener then it is expected that it signals that processing of the provided content (contains the validated and/or normalized content that took place in the pre-processing, if any) is about to occurr.
+        Refers to execution a hook after the pre-processing stage, but before the post-processing stage. If the hook is a responder then it is expected that it processes the request. There should be no listener hooks at this stage.
     </td>
   </tr>
   <tr>
     <th>Post-Processing</th>
     <td>
-        Refers to execution a hook after the pre-processing and in-processing stages. If the hook is a responder then it is expected that it enhances and/or normalizes the request content output. If the hook is a listener then it is expected that it signals that processing of the provided content (contains the enhanced and/or normalized content of the request) has already occurred.
+        Refers to execution a hook after the pre-processing and in-processing stages (in the listed order). If the hook is a responder then it is expected that it enhances and/or normalizes the request content output. If the hook is a listener then it is expected that it signals or forward the response of the processed (enhancement and/or normalization) request content that just occured.
+    </td>
+  </tr>
+  <tr>
+    <th>Output</th>
+    <td>
+        Refers to the execution of hooks which do not alter the response or execution chain in any shape or form. These are listener hooks that serve the purpose of signaling or forwarding the actual outgoing request.
     </td>
   </tr>
 </table>
@@ -68,22 +79,22 @@ Having defined the differnt types of hooks and the available execution stages, w
 <table>
   <tr>
     <th>Execution Order</th>
+    <th>Execution Stage</th>
     <th>Hook Type</th>
-    <th>Hook Stage</th>
     <th>Description</th>
   </tr>
   <tr>
     <th>1</th>
-    <td>Listener</td>
-    <td>Pre-Processing</td>
+    <td>Input</td>
+    <td>Request-Listener</td>
     <td>
-        If one or more (whether in the same service or not) pre-processing non-responder(s) are defined, these are executed in an undefined order parallel from each other and it does not contribute to the final response, independent of status code or content. Processing of other hooks is continued even if execution of these is not complete.
+        If one or more (whether in the same service or not) request-listener(s) (e.g. non-responder(s)) are defined, these are executed in an undefined order parallel from each other and it does not contribute a response, independent of status code or content. Processing of other hooks is continued even if execution of these is not complete.
     </td>
   </tr>
   <tr>
     <th>2</th>
-    <td>Responder</td>
     <td>Pre-Processing</td>
+    <td>Pre-Responder</td>
     <td>
         If one or more (whether in the same service or not) pre-processing responder(s) are defined, these are executed in an undefined order but in serial (one after another) instead of parallel from each other. Only when all of the hooks have been executed will processing continue.
         <p>If the status code returned from any of the responding hooks is Continue (100), the original content for the request is replaced by the response content from it.</p>
@@ -93,24 +104,32 @@ Having defined the differnt types of hooks and the available execution stages, w
   </tr>
   <tr>
     <th>3</th>
-    <td>Listener</td>
-    <td>In-Processing</td>
+    <td>Pre-Processing</td>
+    <td>Pre-Listener</td>
     <td>
-        If one or more in-processing non-responder(s) are defined these are executed in an undefined order parallel from each other and it does not contribute to the final response, independent of status code or content. Processing of other hooks is continued even if execution of them is not complete.
+        If one or more (whether in the same service or not) pre-processing non-responder(s) are defined, these are executed in an undefined order parallel from each other and it does not contribute to the final response, independent of status code or content. Processing of other hooks is continued even if execution of these is not complete.
     </td>
   </tr>
   <tr>
     <th>4</th>
-    <td>Responder</td>
     <td>In-Processing</td>
+    <td>Responder</td>
     <td>
         If one or more in-processing responder(s) are defined these are executed in undefined order in parallel from each other and only when all of these are executed and completed will processing of continue.
     </td>
   </tr>
   <tr>
     <th>5</th>
-    <td>Responder</td>
+    <td>Post-Listener</td>
     <td>Post-Processing</td>
+    <td>
+        If one or more (whether in the same service or not) post-processing non-responder(s) are defined, these are executed in an undefined order parallel from each other and it does not contribute to the final response, independent of status code or content. Processing of other hooks is continued even if execution of these not complete.
+    </td>
+  </tr>
+  <tr>
+    <th>6</th>
+    <td>Post-Processing</td>
+    <td>Post-Responder</td>
     <td>
         If one or more (whether in the same service or not) post-processing responder(s) are defined, these are executed in an undefined order but in serial (one after another) instead of parallel from each other. Only when all of the hooks have been executed is the final response relayed.
         <p>If the status code returned from any of the responding hooks is Continue (100), the content for the final response is replaced by the response content from this.</p>
@@ -119,11 +138,11 @@ Having defined the differnt types of hooks and the available execution stages, w
     </td>
   </tr>
   <tr>
-    <th>6</th>
-    <td>Listener</td>
-    <td>Post-Processing</td>
+    <th>7</th>
+    <td>Output</td>
+    <td>Response-Listener</td>
     <td>
-        If one or more (whether in the same service or not) post-processing non-responder(s) are defined, these are executed in an undefined order parallel from each other and it does not contribute to the final response, independent of status code or content. Processing of other hooks is continued even if execution of these not complete.
+        If one or more (whether in the same service or not) response-listener(s) (e.g. non-responder(s)) are defined, these are executed in an undefined order parallel from each other and it does not contribute a response, independent of status code or content. Processing of other hooks is continued even if execution of these is not complete.
     </td>
   </tr>
 </table>
