@@ -120,8 +120,8 @@ Having defined the differnt types of hooks and the available execution stages, w
   </tr>
   <tr>
     <th>5</th>
-    <td>Post-Listener</td>
     <td>Post-Processing</td>
+    <td>Post-Listener</td>
     <td>
         If one or more (whether in the same service or not) post-processing non-responder(s) are defined, these are executed in an undefined order parallel from each other and it does not contribute to the final response, independent of status code or content. Processing of other hooks is continued even if execution of these not complete.
     </td>
