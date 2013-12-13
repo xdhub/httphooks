@@ -5,7 +5,7 @@ Since there has not been any well defined and standardised model for HTTP hooks,
 
 ## Architecture
 
-HTTP hooks relies on a pub-sub (publisher-subscriber) architecture which gives us the advantage of being able to link and generate dependency chains between compute or i/o units (in the form of a graph) such that their relationship is established through a schema and url path (instead of through direct linking like jsonp does). This gives us the facility, between other things, to iterate quickly on independent logical units and update separately from other logical units by maintaining a well defined interface/contract between these and focus on the internal logic. This type of neat abstract decoupling is respresented by defining a hook on a resource location or url path defined at code level.
+HTTP hooks relies on a pub-sub (publisher-subscriber) architecture which gives us the advantage of being able to link and generate dependency chains between compute or i/o units (in the form of a graph) such that their relationship is established through a schema and url path (instead of through direct linking like jsonp does). This gives us the facility, between other things, to iterate quickly on independent logical units and update separately from other logical units by maintaining a well defined interface/contract between these and focus on the internal logic. This type of neat abstract decoupling is represented by defining a hook on a resource location or url path defined at code level.
 
 ## Hooks
 
@@ -22,7 +22,7 @@ There are two different types of supported hooks:
   </tr>
   <tr>
     <th>Responders</th>
-    <td>Refers to the hook type which actively processes a request and produces a response. Its primary intent is for processing and contibuting to the system in the form of a response.</td>
+    <td>Refers to the hook type which actively processes a request and produces a response. Its primary intent is for processing and contributing to the system in the form of a response.</td>
   </tr>
   <tr>
     <th>Listeners</th>
@@ -36,18 +36,18 @@ Each hook type can be defined to execute in one of the following stages:
 
 <table>
   <tr>
-    <th>Hook Stage</th>
+    <th>Execution Stage</th>
     <th>Description</th>
   </tr>
   <tr>
     <th>Input</th>
     <td>
-        Refers to the execution of hooks which do not alter the request or execution chain in any shape or form. These are listener hooks that serve the purpose of signaling or forwarding the actual incomming request.
+        Refers to the execution of hooks which do not alter the request or execution chain in any shape or form. These are listener hooks that serve the purpose of signaling or forwarding the actual incoming request.
   </tr>
   <tr>
     <th>Pre-Processing</th>
     <td>
-        Refers to execution a hook before the in-processing and post-processing stages (in the listed order). If the hook is a responder then it is expected that it validates and/or normalizes the request content input. If the hook is a listener then it is expected that it signals or forward the response of the processed (validation and/or normalization) request content that just occured.
+        Refers to execution a hook before the in-processing and post-processing stages (in the listed order). If the hook is a responder then it is expected that it validates and/or normalizes the request content input. If the hook is a listener then it is expected that it signals or forward the response of the processed (validation and/or normalization) request content that just occurred.
     </td>
   </tr>
   <tr>
@@ -59,7 +59,7 @@ Each hook type can be defined to execute in one of the following stages:
   <tr>
     <th>Post-Processing</th>
     <td>
-        Refers to execution a hook after the pre-processing and in-processing stages (in the listed order). If the hook is a responder then it is expected that it enhances and/or normalizes the request content output. If the hook is a listener then it is expected that it signals or forward the response of the processed (enhancement and/or normalization) request content that just occured.
+        Refers to execution a hook after the pre-processing and in-processing stages (in the listed order). If the hook is a responder then it is expected that it enhances and/or normalizes the request content output. If the hook is a listener then it is expected that it signals or forward the response of the processed (enhancement and/or normalization) request content that just occurred.
     </td>
   </tr>
   <tr>
@@ -72,7 +72,7 @@ Each hook type can be defined to execute in one of the following stages:
 
 ### Execution order
 
-Having defined the differnt types of hooks and the available execution stages, when joining these together these are executed in the following order:
+Having defined the different types of hooks and the available execution stages, when joining these together these are executed in the following order:
 
 ![Execution order of hooks for a provided url path and a HTTP verb](images/ExecutionModel.jpg)
 
