@@ -99,7 +99,7 @@ Having defined the different types of hooks and the available execution stages, 
         If one or more (whether in the same service or not) pre-processing responder(s) are defined, these are executed in an undefined order but in serial (one after another) instead of parallel from each other. Only when all of the hooks have been executed will processing continue.
         <p>If the status code returned from any of the responding hooks is Continue (100), the original content for the request is replaced by the response content from it.</p>
         <p>If the status code returned from any of the responding hooks is successful (2xx), the original content for the request is maintained and nothing happens.</p>
-        <p>If the status code returned from any of the responding hooks is neither successful (2xx) nor Continue (100) this is treated as an error and the invocation of subsequent hooks is terminated with the corresponding status code and payload.</p>
+        <p>If the status code returned from any of the responding hooks is neither successful (2xx) nor Continue (100) this is treated as an error and the invocation of any subsequent hooks is terminated, except for the pre-listener which always gets invoked after, with the corresponding status code and payload.</p>
     </td>
   </tr>
   <tr>
@@ -134,7 +134,7 @@ Having defined the different types of hooks and the available execution stages, 
         If one or more (whether in the same service or not) post-processing responder(s) are defined, these are executed in an undefined order but in serial (one after another) instead of parallel from each other. Only when all of the hooks have been executed is the final response relayed.
         <p>If the status code returned from any of the responding hooks is Continue (100), the content for the final response is replaced by the response content from this.</p>
         <p>If the status code returned from any of the responding hooks is successful (2xx), the original content for the final response is maintained and nothing happens.</p>
-        <p>If the status code returned from any of the responding hooks is neither successful (2xx) nor Continue (100) this is treated as an error, the original content for the final response is replaced with the response from this and the invocation of subsequent hooks is terminated.</p>
+        <p>If the status code returned from any of the responding hooks is neither successful (2xx) nor Continue (100) this is treated as an error, the original content for the final response is replaced with the response.</p>
     </td>
   </tr>
   <tr>
