@@ -55,8 +55,9 @@ server.listen(8080);
 * [API reference](./doc/api.md)
 
 ## TODO
+* Update hooks in-memory collection to use [collections](https://github.com/montagejs/collections) instead of [dict](https://github.com/domenic/dict) while taking into account optimizing for search on paths.
+* Add remote hook responder invocation and request/response proxying for listeners.
 * Add runtime hook management through HTTP /httphooks topic.
-* Add remote hook support as well as proxying.
 * Add support for other HTTP verbs such as: HEAD and PATCH.
 * Add support for automated parsing based on Content-Type.
-* Add sandbox for function callbacks (http://gf3.github.io/sandbox/).
+* Add [sandbox](http://gf3.github.io/sandbox/) for function callbacks.
