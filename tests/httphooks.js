@@ -11,25 +11,25 @@ var invalidHookCallbackValues = [
     null,
     {},
     {
-        path: null
+        uri: null
     },
     {
         func: null
     },
     {
-        path: null,
+        uri: null,
         func: null
     },
     {
-        path: '../tests/mockCallbackFile.js',
+        uri: '../tests/mockCallbackFile.js',
         func: null
     },
     {
-        path: null,
+        uri: null,
         func: 'hookFn'
     },
     {
-        path: '../tests/mockCallbackFile.js'
+        uri: '../tests/mockCallbackFile.js'
     },
     {
         func: 'hookFn'
@@ -39,25 +39,25 @@ var invalidNoMatchCallbackValues = [
     null,
     {},
     {
-        path: null
+        uri: null
     },
     {
         func: null
     },
     {
-        path: null,
+        uri: null,
         func: null
     },
     {
-        path: '../tests/mockCallbackFile.js',
+        uri: '../tests/mockCallbackFile.js',
         func: null
     },
     {
-        path: null,
+        uri: null,
         func: 'noMatchFn'
     },
     {
-        path: '../tests/mockCallbackFile.js'
+        uri: '../tests/mockCallbackFile.js'
     },
     {
         func: 'noMatchFn'
@@ -66,14 +66,14 @@ var invalidNoMatchCallbackValues = [
 var validHookCallbackValues = [
     function (hookContext) {},
     {
-        path: '../tests/mockCallbackFile.js',
+        uri: '../tests/mockCallbackFile.js',
         func: 'hookFn'
     }
 ];
 var validNoMatchCallbackValues = [
     function (httpContext) {},
     {
-        path: '../tests/mockCallbackFile.js',
+        uri: '../tests/mockCallbackFile.js',
         func: 'noMatchFn'
     }
 ];
@@ -193,7 +193,7 @@ var invalidHookValues = [
         type: 'listener',
         order: 'in',
         callback: {
-            path: null
+            uri: null
         }
     },
     {
@@ -202,7 +202,7 @@ var invalidHookValues = [
         type: 'listener',
         order: 'in',
         callback: {
-            path: ''
+            uri: ''
         }
     },
     {
@@ -211,7 +211,7 @@ var invalidHookValues = [
         type: 'listener',
         order: 'in',
         callback: {
-            path: '',
+            uri: '',
             func: null
         }
     },
@@ -221,7 +221,7 @@ var invalidHookValues = [
         type: 'listener',
         order: 'in',
         callback: {
-            path: '',
+            uri: '',
             func: ''
         }
     }
