@@ -26,7 +26,7 @@ httpHooks.getPreResponder(urlPattern, function (hookContext, done) {
     done();
 });
 
-httpHooks.getInResponder(urlPattern, function (hookContext, done) {
+httpHooks.getResponder(urlPattern, function (hookContext, done) {
     var odd = {
         type: 'odd',
         numbers: []
