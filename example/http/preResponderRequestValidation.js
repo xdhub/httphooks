@@ -17,7 +17,7 @@ httpHooks.getPreResponder(urlPattern, function (hookContext, done) {
     done();
 });
 
-httpHooks.getInResponder(urlPattern, function (hookContext, done) {
+httpHooks.getResponder(urlPattern, function (hookContext, done) {
     var content = 'Welcome to \'' + hookContext.request.url.path + '\'...'
         + '\r\nHello ' + hookContext.request.query.name + '! :)';
     hookContext.response.statusCode = 200;

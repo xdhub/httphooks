@@ -2,7 +2,7 @@ var http = require('http');
 var httpHooks = new (require('../../lib/httphooks.js'))();
 var urlPattern = '/*';
 
-httpHooks.getInResponder(urlPattern, function (hookContext, done) {
+httpHooks.getResponder(urlPattern, function (hookContext, done) {
     var myObject = {
         name: hookContext.request.query.name
     };

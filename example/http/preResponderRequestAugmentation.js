@@ -11,7 +11,7 @@ httpHooks.getPreResponder(urlPattern, function (hookContext, done) {
     } else {
         // If the incoming request is valid, we augment the content or body
         // of the request to include a user JSON object and keep the same
-        // incomming headers
+        // incoming headers
         var content = JSON.stringify({
             name: hookContext.request.query.name,
             normalizedName: hookContext.request.query.name.toLowerCase()
@@ -22,7 +22,7 @@ httpHooks.getPreResponder(urlPattern, function (hookContext, done) {
     done();
 });
 
-httpHooks.getInResponder(urlPattern, function (hookContext, done) {
+httpHooks.getResponder(urlPattern, function (hookContext, done) {
     var user = JSON.parse(hookContext.request.content);
     var content = 'Welcome to \'' + hookContext.request.url.path + '\'...'
         + '\r\nHello ' + user.normalizedName + '! :)';
