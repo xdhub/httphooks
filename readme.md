@@ -23,7 +23,10 @@ var httpHooks = new (require('httphooks'))();
 httpHooks.get('/*', function (hookContext, done) {
     var request = hookContext.request;
     var response = hookContext.response;
-    response.setResponse(200, { 'Content-Type': 'text/html' }, 'Welcome to \'' + request.url.path + '\'... Hello World! :)');
+    response.setResponse(
+        200,
+        { 'Content-Type': 'text/html' },
+        'Welcome to \'' + request.url.path + '\'... Hello World! :)');
     done();
 });
 
