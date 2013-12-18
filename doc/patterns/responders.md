@@ -11,7 +11,6 @@ var httpHooks = new (require('httphooks'))();
 var urlPattern = '/*';
 
 httpHooks.getPreResponder(urlPattern, function (hookContext, done) {
-    console.log(typeof hookContext.request.query.number);
     if (!hookContext.request.query.number
         || typeof hookContext.request.query.number !== 'string'
         || isNaN(parseInt(hookContext.request.query.number, 10))) {
