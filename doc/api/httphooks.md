@@ -85,8 +85,8 @@ Defines an HTTP GET hook whose callback `cb` is invoked upon a request with a ur
 
 **[type]**:  *string*,  The hook type: `'request-listener' | 'pre-responder' | 'pre-listener' | 'responder' | 'post-listener' | 'post-responder' | 'response-listener'`. The default value used when not provided is `'responder'`.
 
-HttpHooks.getListener(urlPattern, cb, \[order\])
-------------------------------------------------
+HttpHooks.getListener(urlPattern, cb, \[prefix\])
+-------------------------------------------------
 Defines a HTTP GET listener hook whose callback `cb` is invoked upon a request with a url path matching the `urlPattern` is detected.
 
 
@@ -96,7 +96,7 @@ Defines a HTTP GET listener hook whose callback `cb` is invoked upon a request w
 
 **cb**:  *function | HookCallback*,  The callback to invoke whenever there is a matching request.
 
-**[order]**:  *string*,  of the hook: `'request' | 'pre' | 'post' | 'response'`. The default value used when not provided is `'response'`.
+**[prefix]**:  *string*,  The prefix of the hook: `'request' | 'pre' | 'post' | 'response'`. The default value used when not provided is `'response'`.
 
 HttpHooks.getRequestListener(urlPattern, cb)
 --------------------------------------------
@@ -142,8 +142,8 @@ Defines a HTTP GET response-listener hook whose callback `cb` is invoked upon a 
 
 **cb**:  *function | HookCallback*,  The callback to invoke whenever there is a matching request.
 
-HttpHooks.getResponder(urlPattern, cb, \[order\])
--------------------------------------------------
+HttpHooks.getResponder(urlPattern, cb, \[prefix\])
+--------------------------------------------------
 Defines a HTTP GET responder hook whose callback `cb` is invoked upon a request with a url path matching the `urlPattern` is detected.
 
 
@@ -153,7 +153,7 @@ Defines a HTTP GET responder hook whose callback `cb` is invoked upon a request 
 
 **cb**:  *function | HookCallback*,  The callback to invoke whenever there is a matching request.
 
-**[order]**:  *string*,  of the hook: `'pre' | '' | 'post'`. The default value used when not provided is `''`.
+**[prefix]**:  *string*,  of the hook: `'pre' | '' | 'post'`. The default value used when not provided is `''`.
 
 HttpHooks.getPreResponder(urlPattern, cb)
 -----------------------------------------
@@ -190,8 +190,8 @@ Defines an HTTP PUT hook whose callback `cb` is invoked upon a request with a ur
 
 **[type]**:  *string*,  The hook type: `'request-listener' | 'pre-responder' | 'pre-listener' | 'responder' | 'post-listener' | 'post-responder' | 'response-listener'`. The default value used when not provided is `'responder'`.
 
-HttpHooks.putListener(urlPattern, cb, \[order\])
-------------------------------------------------
+HttpHooks.putListener(urlPattern, cb, \[prefix\])
+-------------------------------------------------
 Defines an HTTP PUT listener hook whose callback `cb` is invoked upon a request with a url path matching the `urlPattern` is detected.
 
 
@@ -201,7 +201,7 @@ Defines an HTTP PUT listener hook whose callback `cb` is invoked upon a request 
 
 **cb**:  *function | HookCallback*,  The callback to invoke whenever there is a matching request.
 
-**[order]**:  *string*,  of the hook: `'request' | 'pre' | 'post' | 'response'`. The default value used when not provided is `'response'`.
+**[prefix]**:  *string*,  of the hook: `'request' | 'pre' | 'post' | 'response'`. The default value used when not provided is `'response'`.
 
 HttpHooks.putRequestListener(urlPattern, cb)
 --------------------------------------------
@@ -247,8 +247,8 @@ Defines a HTTP PUT response-listener hook whose callback `cb` is invoked upon a 
 
 **cb**:  *function | HookCallback*,  The callback to invoke whenever there is a matching request.
 
-HttpHooks.putResponder(urlPattern, cb, \[order\])
--------------------------------------------------
+HttpHooks.putResponder(urlPattern, cb, \[prefix\])
+--------------------------------------------------
 Defines an HTTP PUT responder hook whose callback `cb` is invoked upon a request with a url path matching the `urlPattern` is detected.
 
 
@@ -258,7 +258,7 @@ Defines an HTTP PUT responder hook whose callback `cb` is invoked upon a request
 
 **cb**:  *function | HookCallback*,  The callback to invoke whenever there is a matching request.
 
-**[order]**:  *string*,  of the hook: `'pre' | '' | 'post'`. The default value used when not provided is `''`.
+**[prefix]**:  *string*,  of the hook: `'pre' | '' | 'post'`. The default value used when not provided is `''`.
 
 HttpHooks.putPreResponder(urlPattern, cb)
 -----------------------------------------
@@ -295,8 +295,8 @@ Defines an HTTP POST hook whose callback `cb` is invoked upon a request with a u
 
 **[type]**:  *string*,  The hook type: `'request-listener' | 'pre-responder' | 'pre-listener' | 'responder' | 'post-listener' | 'post-responder' | 'response-listener'`. The default value used when not provided is `'responder'`.
 
-HttpHooks.postListener(urlPattern, cb, \[order\])
--------------------------------------------------
+HttpHooks.postListener(urlPattern, cb, \[prefix\])
+--------------------------------------------------
 Defines an HTTP POST listener hook whose callback `cb` is invoked upon a request with a url path matching the `urlPattern` is detected.
 
 
@@ -306,7 +306,7 @@ Defines an HTTP POST listener hook whose callback `cb` is invoked upon a request
 
 **cb**:  *function | HookCallback*,  The callback to invoke whenever there is a matching request.
 
-**[order]**:  *string*,  of the hook: `'request' | 'pre' | 'post' | 'response'`. The default value used when not provided is `'response'`.
+**[prefix]**:  *string*,  of the hook: `'request' | 'pre' | 'post' | 'response'`. The default value used when not provided is `'response'`.
 
 HttpHooks.postRequestListener(urlPattern, cb)
 ---------------------------------------------
@@ -352,8 +352,8 @@ Defines a HTTP POST response-listener hook whose callback `cb` is invoked upon a
 
 **cb**:  *function | HookCallback*,  The callback to invoke whenever there is a matching request.
 
-HttpHooks.postResponder(urlPattern, cb, \[order\])
---------------------------------------------------
+HttpHooks.postResponder(urlPattern, cb, \[prefix\])
+---------------------------------------------------
 Defines an HTTP POST responder hook whose callback `cb` is invoked upon a request with a url path matching the `urlPattern` is detected.
 
 
@@ -363,7 +363,7 @@ Defines an HTTP POST responder hook whose callback `cb` is invoked upon a reques
 
 **cb**:  *function | HookCallback*,  The callback to invoke whenever there is a matching request.
 
-**[order]**:  *string*,  of the hook: `'pre' | '' | 'post'`. The default value used when not provided is `''`.
+**[prefix]**:  *string*,  of the hook: `'pre' | '' | 'post'`. The default value used when not provided is `''`.
 
 HttpHooks.postPreResponder(urlPattern, cb)
 ------------------------------------------
@@ -400,8 +400,8 @@ Defines an HTTP DELETE hook whose callback `cb` is invoked upon a request with a
 
 **[type]**:  *string*,  The hook type: `'request-listener' | 'pre-responder' | 'pre-listener' | 'responder' | 'post-listener' | 'post-responder' | 'response-listener'`. The default value used when not provided is `'responder'`.
 
-HttpHooks.deleteListener(urlPattern, cb, \[order\])
----------------------------------------------------
+HttpHooks.deleteListener(urlPattern, cb, \[prefix\])
+----------------------------------------------------
 Defines an HTTP DELETE listener hook whose callback `cb` is invoked upon a request with a url path matching the `urlPattern` is detected.
 
 
@@ -411,7 +411,7 @@ Defines an HTTP DELETE listener hook whose callback `cb` is invoked upon a reque
 
 **cb**:  *function | HookCallback*,  The callback to invoke whenever there is a matching request.
 
-**[order]**:  *string*,  of the hook: `'request' | 'pre' | 'post' | 'response'`. The default value used when not provided is `'response'`.
+**[prefix]**:  *string*,  of the hook: `'request' | 'pre' | 'post' | 'response'`. The default value used when not provided is `'response'`.
 
 HttpHooks.deleteRequestListener(urlPattern, cb)
 -----------------------------------------------
@@ -457,8 +457,8 @@ Defines a HTTP DELETE response-listener hook whose callback `cb` is invoked upon
 
 **cb**:  *function | HookCallback*,  The callback to invoke whenever there is a matching request.
 
-HttpHooks.deleteResponder(urlPattern, cb, \[order\])
-----------------------------------------------------
+HttpHooks.deleteResponder(urlPattern, cb, \[prefix\])
+-----------------------------------------------------
 Defines an HTTP DELETE responder hook whose callback `cb` is invoked upon a request with a url path matching the `urlPattern` is detected.
 
 
@@ -468,7 +468,7 @@ Defines an HTTP DELETE responder hook whose callback `cb` is invoked upon a requ
 
 **cb**:  *function | HookCallback*,  The callback to invoke whenever there is a matching request.
 
-**[order]**:  *string*,  of the hook: `'pre' | '' | 'post'`. The default value used when not provided is `''`.
+**[prefix]**:  *string*,  of the hook: `'pre' | '' | 'post'`. The default value used when not provided is `''`.
 
 HttpHooks.deletePreResponder(urlPattern, cb)
 --------------------------------------------

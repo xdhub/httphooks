@@ -56,7 +56,8 @@ server.listen(8080);
 
 ## TODO
 * Update hooks in-memory collection to use [collections](https://github.com/montagejs/collections) instead of [dict](https://github.com/domenic/dict) while taking into account optimizing for search on paths.
-* Add remote hook responder invocation and request/response proxying for listeners.
+* Update CallbackInfo protocols to support HTTP and HTTPS.
+* Add remote hook responder invocation and request/response proxying for listeners for subscribers.
 * Add runtime hook management through HTTP /httphooks topic.
 * Add support for other HTTP verbs such as: HEAD and PATCH.
 * Add support for automated parsing based on Content-Type.

@@ -6,7 +6,7 @@ class HookCallback
 ------------------
 **Members**
 
-**path**:  *string*,  The path to the node file containing the function to execute.
+**uri**:  *string*,  The uri to the resource containing the function to execute.
 
 **func**:  *string*,  The function to execute.
 
