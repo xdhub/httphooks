@@ -5,13 +5,13 @@ var serverObservable = rxhttp.createServer();
 serverObservable.server.listen(process.env.PORT);
 console.log(process.env.IP + ':' + process.env.PORT);
 
-httpHooks.getInResponder('/*', function (hookContext, done) {
+httpHooks.getResponder('/*', function (hookContext, done) {
     hookContext.response.statusCode = 200;
     hookContext.response.headers = { 'Content-Type': 'text/html' };
     hookContext.response.content = 'Welcome to \'' + hookContext.request.url.path + '\'... Hello world! :)';
     done();
 });
-httpHooks.getInResponder('/test', function (hookContext, done) {
+httpHooks.getResponder('/test', function (hookContext, done) {
     hookContext.response.statusCode = 200;
     hookContext.response.headers = { 'Content-Type': 'text/html' };
     hookContext.response.content = 'Welcome to \'' + hookContext.request.url.path + '\'... Hello world! :)';
