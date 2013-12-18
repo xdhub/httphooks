@@ -7,11 +7,9 @@ httpHooks.getPreResponder(urlPattern, function (hookContext, done) {
     // key named 'name' and a corresponding string value. e.g. /?name=Elmar
     if (!hookContext.request.query.name
         || typeof hookContext.request.query.name !== 'string') {
-        hookContext.response.statusCode = 400;
-        hookContext.response.headers = { 'Content-Type': 'text/html' };
-        hookContext.response.content = 'Bad Request';
+        hookContext.setResponse(400, { 'Content-Type': 'text/html' }, 'Bad Request');
     } else {
-        hookContext.response.statusCode = 200;
+        hookContext.setResponse(200);
     }
 
     done();
@@ -20,9 +18,7 @@ httpHooks.getPreResponder(urlPattern, function (hookContext, done) {
 httpHooks.getResponder(urlPattern, function (hookContext, done) {
     var content = 'Welcome to \'' + hookContext.request.url.path + '\'...'
         + '\r\nHello ' + hookContext.request.query.name + '! :)';
-    hookContext.response.statusCode = 200;
-    hookContext.response.headers = { 'Content-Type': 'text/html' };
-    hookContext.response.content = content;
+    hookContext.setResponse(200, { 'Content-Type': 'text/html' }, content);
     done();
 });
 

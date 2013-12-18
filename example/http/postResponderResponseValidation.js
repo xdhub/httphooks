@@ -8,26 +8,22 @@ httpHooks.getResponder(urlPattern, function (hookContext, done) {
     };
 
     var content = JSON.stringify(myObject);
-    hookContext.response.statusCode = 200;
-    hookContext.response.headers = { 'Content-Type': 'application/json' };
-    hookContext.response.content = content;
+    hookContext.setResponse(200, { 'Content-Type': 'application/json' }, content);
     done();
 });
 
 httpHooks.getPostResponder(urlPattern, function (hookContext, done) {
-    hookContext.response.statusCode = 200;
-    if (hookContext.response.responses.length === 1) {
+    hookContext.setResponse(200);
+    if (hookContext.responseQueue.length === 1) {
         // We expect that the request url have an object with a property 'name'
         // and a corresponding string value
-        var response = hookContext.response.responses[0];
+        var response = hookContext.responseQueue[0];
         var myObject = JSON.parse(response.content);
 
         if (!myObject
             || !myObject.name
             || typeof myObject.name !== 'string') {
-            hookContext.response.statusCode = 500;
-            hookContext.response.headers = { 'Content-Type': 'text/html' };
-            hookContext.response.content = 'Internal Server Error';
+            hookContext.setResponse(500, { 'Content-Type': 'text/html' }, 'Internal Server Error');
         }
     }
 

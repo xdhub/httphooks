@@ -4,7 +4,6 @@ var httpHooks = new (require('../../lib/httphooks.js'))();
 
 httpHooks.getResponder('/*', function (hookContext, done) {
     request('http://www.google.com', function (error, response, body) {
-        hookContext.response.statusCode = response.statusCode;
         if (!error && response.statusCode === 200) {
             hookContext.setResponse(
                 response.statusCode,
@@ -12,6 +11,7 @@ httpHooks.getResponder('/*', function (hookContext, done) {
                 'Welcome to \'' + hookContext.request.url.path + '\'... Hello world! :)');
             done();
         } else {
+            hookContext.setResponse(response.statusCode);
             done();
         }
     });

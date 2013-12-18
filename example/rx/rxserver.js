@@ -6,15 +6,13 @@ serverObservable.server.listen(process.env.PORT);
 console.log(process.env.IP + ':' + process.env.PORT);
 
 httpHooks.getResponder('/*', function (hookContext, done) {
-    hookContext.response.statusCode = 200;
-    hookContext.response.headers = { 'Content-Type': 'text/html' };
-    hookContext.response.content = 'Welcome to \'' + hookContext.request.url.path + '\'... Hello world! :)';
+    var content = 'Welcome to \'' + hookContext.request.url.path + '\'... Hello world! :)';
+    hookContext.setResponse(200, { 'Content-Type': 'text/html' }, content);
     done();
 });
 httpHooks.getResponder('/test', function (hookContext, done) {
-    hookContext.response.statusCode = 200;
-    hookContext.response.headers = { 'Content-Type': 'text/html' };
-    hookContext.response.content = 'Welcome to \'' + hookContext.request.url.path + '\'... Hello world! :)';
+    var content = 'Welcome to \'' + hookContext.request.url.path + '\'... Hello world! :)';
+    hookContext.setResponse(200, { 'Content-Type': 'text/html' }, content);
     done();
 });
 var httpHooksObserver = httpHooks.asObserver();
