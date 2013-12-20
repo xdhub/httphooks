@@ -64,14 +64,14 @@ var invalidNoMatchCallbackValues = [
     }
 ];
 var validHookCallbackValues = [
-    function (hookContext) {},
+    function (hookContext, done) { done(); },
     {
         uri: 'file:///../tests/mockCallbackFile.js',
         func: 'hookFn'
     }
 ];
 var validNoMatchCallbackValues = [
-    function (httpContext) {},
+    function (httpContext, done) { done(); },
     {
         uri: 'file:///../tests/mockCallbackFile.js',
         func: 'noMatchFn'

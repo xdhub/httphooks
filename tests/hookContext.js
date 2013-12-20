@@ -9,7 +9,11 @@ var validHttpContexts = [
             headers: {},
             content: ''
         },
-        response: {},
+        response: {
+            statusCode: 200,
+            headers: {},
+            content: ''
+        },
         responseQueue: []
     },
     {
@@ -19,7 +23,11 @@ var validHttpContexts = [
             headers: {},
             content: ''
         },
-        response: {},
+        response: {
+            statusCode: 200,
+            headers: {},
+            content: ''
+        },
         responseQueue: [ {} ]
     },
     {
@@ -31,7 +39,11 @@ var validHttpContexts = [
             },
             content: ' '
         },
-        response: {},
+        response: {
+            statusCode: 200,
+            headers: {},
+            content: ''
+        },
         responseQueue: [ {} ]
     }
 ];
@@ -46,7 +58,11 @@ var invalidHttpContexts = [
         request: null
     },
     {
-        response: { }
+        response: {
+            statusCode: 200,
+            headers: {},
+            content: ''
+        }
     },
     {
         response: null
@@ -57,7 +73,11 @@ var invalidHttpContexts = [
     },
     {
         request: null,
-        response: { }
+        response: {
+            statusCode: 200,
+            headers: {},
+            content: ''
+        }
     },
     {
         request: { },
@@ -65,14 +85,20 @@ var invalidHttpContexts = [
     },
     {
         request: { },
-        response: { }
+        response: {
+            statusCode: 200,
+            headers: {},
+            content: ''
+        }
     },
     {
         request: {
             url: ''
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -80,7 +106,9 @@ var invalidHttpContexts = [
             method: ''
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -88,7 +116,9 @@ var invalidHttpContexts = [
             headers: {}
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -96,7 +126,9 @@ var invalidHttpContexts = [
             content: ''
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -105,7 +137,9 @@ var invalidHttpContexts = [
             method: ''
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -114,7 +148,9 @@ var invalidHttpContexts = [
             headers: {}
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -123,7 +159,9 @@ var invalidHttpContexts = [
             content: ''
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -132,7 +170,9 @@ var invalidHttpContexts = [
             headers: {}
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -141,7 +181,9 @@ var invalidHttpContexts = [
             content: ''
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -150,7 +192,9 @@ var invalidHttpContexts = [
             content: ''
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -160,7 +204,9 @@ var invalidHttpContexts = [
             headers: {}
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -170,7 +216,9 @@ var invalidHttpContexts = [
             content: ''
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -180,7 +228,9 @@ var invalidHttpContexts = [
             content: ''
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -190,7 +240,9 @@ var invalidHttpContexts = [
             content: ''
         },
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
@@ -209,7 +261,11 @@ var invalidHttpContexts = [
             headers: {},
             content: ''
         },
-        response: { }
+        response: {
+            statusCode: 200,
+            headers: {},
+            content: ''
+        }
     },
     {
         request: {
@@ -219,13 +275,17 @@ var invalidHttpContexts = [
             content: ''
         },
         response: {
-            responses: null
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     },
     {
         request: null,
         response: {
-            responses: []
+            statusCode: 200,
+            headers: {},
+            content: ''
         }
     }
 ];
