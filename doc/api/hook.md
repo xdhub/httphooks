@@ -2,14 +2,6 @@ Hook Reference
 ==============
 **Author:** Elmar Langholz
 
-class HookCallback
-------------------
-**Members**
-
-**uri**:  *string*,  The uri to the resource containing the function to execute.
-
-**func**:  *string*,  The function to execute.
-
 class Hook
 ----------
 **Members**
