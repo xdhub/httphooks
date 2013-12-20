@@ -3,21 +3,21 @@ var httpHooks = new (require('../../lib/httphooks.js'))();
 var urlPattern = '/*';
 
 httpHooks.getPreResponder(urlPattern, function (hookContext, done) {
-    console.log(typeof hookContext.request.query.number);
     if (!hookContext.request.query.number
         || typeof hookContext.request.query.number !== 'string'
         || isNaN(parseInt(hookContext.request.query.number, 10))) {
-        hookContext.response.statusCode = 400;
-        hookContext.response.headers = { 'Content-Type': 'text/html' };
-        hookContext.response.content = 'Bad Request';
+        hookContext.setResponse(
+            400,
+            { 'Content-Type': 'text/html' },
+            'Bad Request');
     } else {
-        hookContext.response.statusCode = 200;
+        hookContext.setResponse(200);
     }
 
     done();
 });
 
-httpHooks.getInResponder(urlPattern, function (hookContext, done) {
+httpHooks.getResponder(urlPattern, function (hookContext, done) {
     var odd = {
         type: 'odd',
         numbers: []
@@ -31,13 +31,11 @@ httpHooks.getInResponder(urlPattern, function (hookContext, done) {
     }
 
     var content = JSON.stringify(odd);
-    hookContext.response.statusCode = 200;
-    hookContext.response.headers = { 'Content-Type': 'application/json' };
-    hookContext.response.content = content;
+    hookContext.setResponse(200, { 'Content-Type': 'application/json' }, content);
     done();
 });
 
-httpHooks.getInResponder(urlPattern, function (hookContext, done) {
+httpHooks.getResponder(urlPattern, function (hookContext, done) {
     var even = {
         type: 'even',
         numbers: []
@@ -51,9 +49,7 @@ httpHooks.getInResponder(urlPattern, function (hookContext, done) {
     }
 
     var content = JSON.stringify(even);
-    hookContext.response.statusCode = 200;
-    hookContext.response.headers = { 'Content-Type': 'application/json' };
-    hookContext.response.content = content;
+    hookContext.setResponse(200, { 'Content-Type': 'application/json' }, content);
     done();
 });
 

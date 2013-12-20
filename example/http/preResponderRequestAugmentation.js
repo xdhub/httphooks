@@ -5,13 +5,11 @@ var urlPattern = '/*';
 httpHooks.getPreResponder(urlPattern, function (hookContext, done) {
     if (!hookContext.request.query.name
         || typeof hookContext.request.query.name !== 'string') {
-        hookContext.response.statusCode = 400;
-        hookContext.response.headers = { 'Content-Type': 'text/html' };
-        hookContext.response.content = 'Bad Request';
+        hookContext.setResponse(400, { 'Content-Type': 'text/html' }, 'Bad Request');
     } else {
         // If the incoming request is valid, we augment the content or body
         // of the request to include a user JSON object and keep the same
-        // incomming headers
+        // incoming headers
         var content = JSON.stringify({
             name: hookContext.request.query.name,
             normalizedName: hookContext.request.query.name.toLowerCase()
@@ -22,13 +20,11 @@ httpHooks.getPreResponder(urlPattern, function (hookContext, done) {
     done();
 });
 
-httpHooks.getInResponder(urlPattern, function (hookContext, done) {
+httpHooks.getResponder(urlPattern, function (hookContext, done) {
     var user = JSON.parse(hookContext.request.content);
     var content = 'Welcome to \'' + hookContext.request.url.path + '\'...'
         + '\r\nHello ' + user.normalizedName + '! :)';
-    hookContext.response.statusCode = 200;
-    hookContext.response.headers = { 'Content-Type': 'text/html' };
-    hookContext.response.content = content;
+    hookContext.setResponse(200, { 'Content-Type': 'text/html' }, content);
     done();
 });
 

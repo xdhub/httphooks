@@ -11,25 +11,25 @@ var invalidHookCallbackValues = [
     null,
     {},
     {
-        path: null
+        uri: null
     },
     {
         func: null
     },
     {
-        path: null,
+        uri: null,
         func: null
     },
     {
-        path: '../tests/mockCallbackFile.js',
+        uri: 'file:///../tests/mockCallbackFile.js',
         func: null
     },
     {
-        path: null,
+        uri: null,
         func: 'hookFn'
     },
     {
-        path: '../tests/mockCallbackFile.js'
+        uri: 'file:///../tests/mockCallbackFile.js'
     },
     {
         func: 'hookFn'
@@ -39,25 +39,25 @@ var invalidNoMatchCallbackValues = [
     null,
     {},
     {
-        path: null
+        uri: null
     },
     {
         func: null
     },
     {
-        path: null,
+        uri: null,
         func: null
     },
     {
-        path: '../tests/mockCallbackFile.js',
+        uri: 'file:///../tests/mockCallbackFile.js',
         func: null
     },
     {
-        path: null,
+        uri: null,
         func: 'noMatchFn'
     },
     {
-        path: '../tests/mockCallbackFile.js'
+        uri: 'file:///../tests/mockCallbackFile.js'
     },
     {
         func: 'noMatchFn'
@@ -66,29 +66,24 @@ var invalidNoMatchCallbackValues = [
 var validHookCallbackValues = [
     function (hookContext) {},
     {
-        path: '../tests/mockCallbackFile.js',
+        uri: 'file:///../tests/mockCallbackFile.js',
         func: 'hookFn'
     }
 ];
 var validNoMatchCallbackValues = [
     function (httpContext) {},
     {
-        path: '../tests/mockCallbackFile.js',
+        uri: 'file:///../tests/mockCallbackFile.js',
         func: 'noMatchFn'
     }
-];
-var invalidOrderValues = [
-    'i', 'p', 'pr',
-    'po', 'pos', 'im', 'inf',
-    'inin', 'pra', 'pres', 'prepre',
-    'poss', 'posti', 'postpost'
 ];
 var invalidTypeValues = [
     'l', 'li', 'lis', 'list', 'liste',
     'listen', 'listene', 'listenes', 'listeners',
     'r', 're', 'res', 'resp', 'respo',
     'respon', 'respond', 'responde', 'respondet',
-    'responders'
+    'responders', 'pre-l', 'post-l', 'request-l',
+    'response-l', 'pre-r', 'post-r'
 ];
 var invalidHooksTypes = [ 1, function () {}, {}, 'asdfasdf' ];
 var invalidHookValues = [
@@ -133,31 +128,7 @@ var invalidHookValues = [
     {
         method: 'GET',
         urlPattern: '/this/is/my/topic',
-        type: 'listener'
-    },
-    {
-        method: 'GET',
-        urlPattern: '/this/is/my/topic',
-        type: 'listener',
-        order: null
-    },
-    {
-        method: 'GET',
-        urlPattern: '/this/is/my/topic',
-        type: 'listener',
-        order: ''
-    },
-    {
-        method: 'GET',
-        urlPattern: '/this/is/my/topic',
-        type: 'listener',
-        order: 'bob'
-    },
-    {
-        method: 'GET',
-        urlPattern: '/this/is/my/topic',
-        type: 'listener',
-        order: 'in'
+        type: 'pre-listener'
     },
     {
         method: 'GET',
@@ -169,59 +140,52 @@ var invalidHookValues = [
     {
         method: 'GET',
         urlPattern: '/this/is/my/topic',
-        type: 'listener',
-        order: 'in',
+        type: 'pre-listener',
         callback: ''
     },
     {
         method: 'GET',
         urlPattern: '/this/is/my/topic',
-        type: 'listener',
-        order: 'in',
+        type: 'pre-listener',
         callback: {}
     },
     {
         method: 'GET',
         urlPattern: '/this/is/my/topic',
-        type: 'listener',
-        order: 'in',
+        type: 'pre-listener',
         callback: {}
     },
     {
         method: 'GET',
         urlPattern: '/this/is/my/topic',
-        type: 'listener',
-        order: 'in',
+        type: 'pre-listener',
         callback: {
-            path: null
+            uri: null
         }
     },
     {
         method: 'GET',
         urlPattern: '/this/is/my/topic',
-        type: 'listener',
-        order: 'in',
+        type: 'pre-listener',
         callback: {
-            path: ''
+            uri: ''
         }
     },
     {
         method: 'GET',
         urlPattern: '/this/is/my/topic',
-        type: 'listener',
-        order: 'in',
+        type: 'pre-listener',
         callback: {
-            path: '',
+            uri: '',
             func: null
         }
     },
     {
         method: 'GET',
         urlPattern: '/this/is/my/topic',
-        type: 'listener',
-        order: 'in',
+        type: 'pre-listener',
         callback: {
-            path: '',
+            uri: '',
             func: ''
         }
     }
@@ -238,19 +202,14 @@ function constructValidHookValues() {
         methodSet.forEach(function (method) {
             constants.hookTypes.map(expandStringToLowerAndUpperCase).forEach(function (typeSet) {
                 typeSet.forEach(function (type) {
-                    constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                        orderSet.forEach(function (order) {
-                            validHookCallbackValues.forEach(function (callback) {
-                                var hook = {
-                                    method: method,
-                                    urlPattern: '/',
-                                    type: type,
-                                    order: order,
-                                    callback: callback
-                                };
-                                hooks.push(hook);
-                            });
-                        });
+                    validHookCallbackValues.forEach(function (callback) {
+                        var hook = {
+                            method: method,
+                            urlPattern: '/',
+                            type: type,
+                            callback: callback
+                        };
+                        hooks.push(hook);
                     });
                 });
             });
@@ -276,7 +235,7 @@ function validateHooksCollectionHasCount(hooks, count) {
     hooksCount.should.equal(count);
 }
 
-function validateSingleHooksIsSet(hooks, urlPattern, method, order, type) {
+function validateSingleHooksIsSet(hooks, urlPattern, method, type) {
     var methodHooks = hooks.get(method);
     methodHooks.should.be.an.Object.and.should.not.be.empty;
     methodHooks.should.have.property('hooks');
@@ -284,10 +243,9 @@ function validateSingleHooksIsSet(hooks, urlPattern, method, order, type) {
     methodHooks.hooks[0].urlPatternString.should.equal(urlPattern);
     methodHooks.hooks[0].method.should.equal(method);
     methodHooks.hooks[0].type.should.equal(type);
-    methodHooks.hooks[0].order.should.equal(order);
 }
 
-function validateHookInvoke(done, method, order, type) {
+function validateHookInvoke(done, method, type) {
     var foundError = false;
     var url = '/my/documents?file=README.md';
     var dataBuffer = new Buffer('a!_ ][');
@@ -305,20 +263,26 @@ function validateHookInvoke(done, method, order, type) {
     var hook = {
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: order,
         type: type,
         callback: function (hookContext, complete) {
             try {
-                hookContext.should.have.properties([ 'request', 'response' ]);
+                hookContext.should.have.properties(['request', 'hook']);
                 hookContext.request.should.have.properties([ 'method', 'url', 'query', 'headers', 'content' ]);
                 hookContext.request.method.should.equal(method);
                 hookContext.request.url.should.have.property('path');
                 hookContext.request.url.path.should.equal(url);
                 hookContext.request.headers.should.eql(headers);
                 hookContext.request.content.should.equal(data);
-                hookContext.response.should.have.property('responses');
-                hookContext.response.responses.should.be.an.Array;
-                hookContext.response.responses.should.be.empty;
+                hookContext.hook.should.have.properties(['identifier', 'type', 'urlPattern']);
+                hookContext.hook.type.should.equal(type);
+                hookContext.hook.urlPattern.should.equal('/my/documents?file=:filename');
+                hookContext.should.have.property('responseQueue');
+                hookContext.responseQueue.should.be.an.Array;
+                hookContext.responseQueue.should.be.empty;
+                var isResponder = hookContext.hook.type.indexOf('responder') !== -1;
+                if (isResponder || hookContext.hook.type === 'response-listener') {
+                    hookContext.should.have.property('response');
+                }
             } catch (error) {
                 foundError = true;
                 done(error);
@@ -346,7 +310,7 @@ function validateHookInvoke(done, method, order, type) {
     httpContext.request.emit('end');
 }
 
-function validatePreResponderHookSuccessBeforeInResponderHookInvoke(done, method) {
+function validatePreResponderHookSuccessBeforeResponderHookInvoke(done, method) {
     var foundError = false;
     var url = '/my/documents?file=README.md';
     var requestDataBuffer = new Buffer('a!_ ][');
@@ -363,8 +327,7 @@ function validatePreResponderHookSuccessBeforeInResponderHookInvoke(done, method
     httpHooks.addHook({
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'pre',
-        type: 'responder',
+        type: 'pre-responder',
         callback: function (hookContext, complete) {
             try {
                 hookContext.should.have.properties([ 'request', 'response' ]);
@@ -374,9 +337,9 @@ function validatePreResponderHookSuccessBeforeInResponderHookInvoke(done, method
                 hookContext.request.url.path.should.equal(url);
                 hookContext.request.headers.should.eql(requestHeaders);
                 hookContext.request.content.should.equal(requestData);
-                hookContext.response.should.have.property('responses');
-                hookContext.response.responses.should.be.an.Array;
-                hookContext.response.responses.should.be.empty;
+                hookContext.should.have.property('responseQueue');
+                hookContext.responseQueue.should.be.an.Array;
+                hookContext.responseQueue.should.be.empty;
                 hookContext.response.statusCode = 200;
             } catch (error) {
                 foundError = true;
@@ -389,7 +352,6 @@ function validatePreResponderHookSuccessBeforeInResponderHookInvoke(done, method
     httpHooks.addHook({
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'in',
         type: 'responder',
         callback: function (hookContext, complete) {
             if (foundError) {
@@ -405,9 +367,9 @@ function validatePreResponderHookSuccessBeforeInResponderHookInvoke(done, method
                 hookContext.request.url.path.should.equal(url);
                 hookContext.request.headers.should.eql(requestHeaders);
                 hookContext.request.content.should.equal(requestData);
-                hookContext.response.should.have.property('responses');
-                hookContext.response.responses.should.be.an.Array;
-                hookContext.response.responses.should.be.empty;
+                hookContext.should.have.property('responseQueue');
+                hookContext.responseQueue.should.be.an.Array;
+                hookContext.responseQueue.should.be.empty;
                 hookContext.response.statusCode = 200;
                 hookContext.response.content = responseDataBuffer.toString();
             } catch (error) {
@@ -429,7 +391,7 @@ function validatePreResponderHookSuccessBeforeInResponderHookInvoke(done, method
     httpContext.response.on('end', function () {
         if (!foundError) {
             httpContext.should.have.properties([ 'request', 'response' ]);
-            httpContext.response.should.have.property('responses');
+            httpContext.should.have.property('responseQueue');
             httpContext.response.statusCode.should.equal(200);
             httpContext.response._headers.should.eql({ 'Content-Length': responseDataBuffer.length });
             httpContext.response._data.should.not.be.empty;
@@ -443,7 +405,7 @@ function validatePreResponderHookSuccessBeforeInResponderHookInvoke(done, method
     httpContext.request.emit('end');
 }
 
-function validatePostResponderHookSuccessAfterInResponderHookInvoke(done, method) {
+function validatePostResponderHookSuccessAfterResponderHookInvoke(done, method) {
     var foundError = false;
     var url = '/my/documents?file=README.md';
     var requestDataBuffer = new Buffer('a!_ ][');
@@ -460,7 +422,6 @@ function validatePostResponderHookSuccessAfterInResponderHookInvoke(done, method
     httpHooks.addHook({
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'in',
         type: 'responder',
         callback: function (hookContext, complete) {
             try {
@@ -471,9 +432,9 @@ function validatePostResponderHookSuccessAfterInResponderHookInvoke(done, method
                 hookContext.request.url.path.should.equal(url);
                 hookContext.request.headers.should.eql(requestHeaders);
                 hookContext.request.content.should.equal(requestData);
-                hookContext.response.should.have.property('responses');
-                hookContext.response.responses.should.be.an.Array;
-                hookContext.response.responses.should.be.empty;
+                hookContext.should.have.property('responseQueue');
+                hookContext.responseQueue.should.be.an.Array;
+                hookContext.responseQueue.should.be.empty;
                 hookContext.response.statusCode = 200;
                 hookContext.response.content = responseDataBuffer.toString();
             } catch (error) {
@@ -487,8 +448,7 @@ function validatePostResponderHookSuccessAfterInResponderHookInvoke(done, method
     httpHooks.addHook({
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'post',
-        type: 'responder',
+        type: 'post-responder',
         callback: function (hookContext, complete) {
             if (!foundError) {
                 try {
@@ -499,11 +459,11 @@ function validatePostResponderHookSuccessAfterInResponderHookInvoke(done, method
                     hookContext.request.url.path.should.equal(url);
                     hookContext.request.headers.should.eql(requestHeaders);
                     hookContext.request.content.should.equal(requestData);
-                    hookContext.response.should.have.property('responses');
-                    hookContext.response.responses.should.be.an.Array;
-                    hookContext.response.responses.should.not.be.empty;
-                    hookContext.response.responses.should.have.a.lengthOf(1);
-                    var response = hookContext.response.responses[0];
+                    hookContext.should.have.property('responseQueue');
+                    hookContext.responseQueue.should.be.an.Array;
+                    hookContext.responseQueue.should.not.be.empty;
+                    hookContext.responseQueue.should.have.a.lengthOf(1);
+                    var response = hookContext.responseQueue[0];
                     response.statusCode.should.be.equal(200);
                     response.content.should.be.equal(responseDataBuffer.toString());
                     hookContext.response.statusCode = 200;
@@ -527,7 +487,7 @@ function validatePostResponderHookSuccessAfterInResponderHookInvoke(done, method
     httpContext.response.on('end', function () {
         if (!foundError) {
             httpContext.should.have.properties([ 'request', 'response' ]);
-            httpContext.response.should.have.property('responses');
+            httpContext.should.have.property('responseQueue');
             httpContext.response.statusCode.should.equal(200);
             httpContext.response._headers.should.eql({ 'Content-Length': responseDataBuffer.length });
             httpContext.response._data.should.not.be.empty;
@@ -541,7 +501,7 @@ function validatePostResponderHookSuccessAfterInResponderHookInvoke(done, method
     httpContext.request.emit('end');
 }
 
-function validatePreResponderHookFailureBeforeInResponderHookInvoke(done, method) {
+function validatePreResponderHookFailureBeforeResponderHookInvoke(done, method) {
     var foundError = false;
     var url = '/my/documents?file=README.md';
     var requestDataBuffer = new Buffer('a!_ ][');
@@ -559,8 +519,7 @@ function validatePreResponderHookFailureBeforeInResponderHookInvoke(done, method
     httpHooks.addHook({
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'pre',
-        type: 'responder',
+        type: 'pre-responder',
         callback: function (hookContext, complete) {
             try {
                 hookContext.should.have.properties([ 'request', 'response' ]);
@@ -570,9 +529,9 @@ function validatePreResponderHookFailureBeforeInResponderHookInvoke(done, method
                 hookContext.request.url.path.should.equal(url);
                 hookContext.request.headers.should.eql(requestHeaders);
                 hookContext.request.content.should.equal(requestData);
-                hookContext.response.should.have.property('responses');
-                hookContext.response.responses.should.be.an.Array;
-                hookContext.response.responses.should.be.empty;
+                hookContext.should.have.property('responseQueue');
+                hookContext.responseQueue.should.be.an.Array;
+                hookContext.responseQueue.should.be.empty;
                 hookContext.response.statusCode = 400;
                 hookContext.response.content = responseData;
             } catch (error) {
@@ -586,7 +545,6 @@ function validatePreResponderHookFailureBeforeInResponderHookInvoke(done, method
     httpHooks.addHook({
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'in',
         type: 'responder',
         callback: function (hookContext, complete) {
             done(new Error('Expected the in-responder hook for \'' + method + '\' to not be invoked'));
@@ -605,7 +563,7 @@ function validatePreResponderHookFailureBeforeInResponderHookInvoke(done, method
     httpContext.response.on('end', function () {
         if (!foundError) {
             httpContext.should.have.properties([ 'request', 'response' ]);
-            httpContext.response.should.have.property('responses');
+            httpContext.should.have.property('responseQueue');
             httpContext.response.statusCode.should.equal(400);
             httpContext.response._headers.should.eql({ 'Content-Length': responseDataBuffer.length });
             httpContext.response._data.should.not.be.empty;
@@ -619,7 +577,7 @@ function validatePreResponderHookFailureBeforeInResponderHookInvoke(done, method
     httpContext.request.emit('end');
 }
 
-function validatePostResponderHookFailureAfterInResponderHookInvoke(done, method) {
+function validatePostResponderHookFailureAfterResponderHookInvoke(done, method) {
     var foundError = false;
     var url = '/my/documents?file=README.md';
     var requestDataBuffer = new Buffer('a!_ ][');
@@ -640,7 +598,6 @@ function validatePostResponderHookFailureAfterInResponderHookInvoke(done, method
     httpHooks.addHook({
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'in',
         type: 'responder',
         callback: function (hookContext, complete) {
             try {
@@ -651,9 +608,9 @@ function validatePostResponderHookFailureAfterInResponderHookInvoke(done, method
                 hookContext.request.url.path.should.equal(url);
                 hookContext.request.headers.should.eql(requestHeaders);
                 hookContext.request.content.should.equal(requestData);
-                hookContext.response.should.have.property('responses');
-                hookContext.response.responses.should.be.an.Array;
-                hookContext.response.responses.should.be.empty;
+                hookContext.should.have.property('responseQueue');
+                hookContext.responseQueue.should.be.an.Array;
+                hookContext.responseQueue.should.be.empty;
                 hookContext.response.statusCode = 200;
                 hookContext.response.content = intermediateData;
             } catch (error) {
@@ -667,8 +624,7 @@ function validatePostResponderHookFailureAfterInResponderHookInvoke(done, method
     httpHooks.addHook({
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'post',
-        type: 'responder',
+        type: 'post-responder',
         callback: function (hookContext, complete) {
             if (!foundError) {
                 try {
@@ -679,11 +635,11 @@ function validatePostResponderHookFailureAfterInResponderHookInvoke(done, method
                     hookContext.request.url.path.should.equal(url);
                     hookContext.request.headers.should.eql(requestHeaders);
                     hookContext.request.content.should.equal(requestData);
-                    hookContext.response.should.have.property('responses');
-                    hookContext.response.responses.should.be.an.Array;
-                    hookContext.response.responses.should.not.be.empty;
-                    hookContext.response.responses.should.have.a.lengthOf(1);
-                    var response = hookContext.response.responses[0];
+                    hookContext.should.have.property('responseQueue');
+                    hookContext.responseQueue.should.be.an.Array;
+                    hookContext.responseQueue.should.not.be.empty;
+                    hookContext.responseQueue.should.have.a.lengthOf(1);
+                    var response = hookContext.responseQueue[0];
                     response.statusCode.should.be.equal(200);
                     response.content.should.be.equal(intermediateData);
                     hookContext.response.statusCode = 400;
@@ -709,7 +665,7 @@ function validatePostResponderHookFailureAfterInResponderHookInvoke(done, method
     httpContext.response.on('end', function () {
         if (!foundError) {
             httpContext.should.have.properties([ 'request', 'response' ]);
-            httpContext.response.should.have.property('responses');
+            httpContext.should.have.property('responseQueue');
             httpContext.response.statusCode.should.equal(400);
             httpContext.response._headers.should.eql({ 'Content-Length': responseDataBuffer.length });
             httpContext.response._data.should.not.be.empty;
@@ -723,7 +679,7 @@ function validatePostResponderHookFailureAfterInResponderHookInvoke(done, method
     httpContext.request.emit('end');
 }
 
-function validatePreResponderHookContinueBeforeInResponderHookInvoke(done, method) {
+function validatePreResponderHookContinueBeforeResponderHookInvoke(done, method) {
     var foundError = false;
     var url = '/my/documents?file=README.md';
     var requestDataBuffer = new Buffer('a!_ ][');
@@ -743,8 +699,7 @@ function validatePreResponderHookContinueBeforeInResponderHookInvoke(done, metho
     httpHooks.addHook({
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'pre',
-        type: 'responder',
+        type: 'pre-responder',
         callback: function (hookContext, complete) {
             try {
                 hookContext.should.have.properties([ 'request', 'response' ]);
@@ -754,9 +709,9 @@ function validatePreResponderHookContinueBeforeInResponderHookInvoke(done, metho
                 hookContext.request.url.path.should.equal(url);
                 hookContext.request.headers.should.eql(requestHeaders);
                 hookContext.request.content.should.equal(requestData);
-                hookContext.response.should.have.property('responses');
-                hookContext.response.responses.should.be.an.Array;
-                hookContext.response.responses.should.be.empty;
+                hookContext.should.have.property('responseQueue');
+                hookContext.responseQueue.should.be.an.Array;
+                hookContext.responseQueue.should.be.empty;
                 hookContext.replaceRequest(
                     { 'Content-Type': 'application/json', 'X-Header-Me': 'woot' },
                     continueData);
@@ -771,7 +726,6 @@ function validatePreResponderHookContinueBeforeInResponderHookInvoke(done, metho
     httpHooks.addHook({
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'in',
         type: 'responder',
         callback: function (hookContext, complete) {
             if (!foundError) {
@@ -787,9 +741,9 @@ function validatePreResponderHookContinueBeforeInResponderHookInvoke(done, metho
                         'X-Header-Me': 'woot',
                         'Content-Length': continueDataBuffer.length });
                     hookContext.request.content.should.equal(continueData);
-                    hookContext.response.should.have.property('responses');
-                    hookContext.response.responses.should.be.an.Array;
-                    hookContext.response.responses.should.be.empty;
+                    hookContext.should.have.property('responseQueue');
+                    hookContext.responseQueue.should.be.an.Array;
+                    hookContext.responseQueue.should.be.empty;
                     hookContext.response.statusCode = 200;
                     hookContext.response.content = responseDataBuffer.toString();
                 } catch (error) {
@@ -812,7 +766,7 @@ function validatePreResponderHookContinueBeforeInResponderHookInvoke(done, metho
     httpContext.response.on('end', function () {
         if (!foundError) {
             httpContext.should.have.properties([ 'request', 'response' ]);
-            httpContext.response.should.have.property('responses');
+            httpContext.should.have.property('responseQueue');
             httpContext.response.statusCode.should.equal(200);
             httpContext.response._headers.should.eql({ 'Content-Length': responseDataBuffer.length });
             httpContext.response._data.should.not.be.empty;
@@ -826,7 +780,7 @@ function validatePreResponderHookContinueBeforeInResponderHookInvoke(done, metho
     httpContext.request.emit('end');
 }
 
-function validatePostResponderHookContinueAfterInResponderHookInvoke(done, method) {
+function validatePostResponderHookContinueAfterResponderHookInvoke(done, method) {
     var foundError = false;
     var url = '/my/documents?file=README.md';
     var requestDataBuffer = new Buffer('a!_ ][');
@@ -846,7 +800,6 @@ function validatePostResponderHookContinueAfterInResponderHookInvoke(done, metho
     httpHooks.addHook({
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'in',
         type: 'responder',
         callback: function (hookContext, complete) {
             try {
@@ -857,9 +810,9 @@ function validatePostResponderHookContinueAfterInResponderHookInvoke(done, metho
                 hookContext.request.url.path.should.equal(url);
                 hookContext.request.headers.should.eql(requestHeaders);
                 hookContext.request.content.should.equal(requestData);
-                hookContext.response.should.have.property('responses');
-                hookContext.response.responses.should.be.an.Array;
-                hookContext.response.responses.should.be.empty;
+                hookContext.should.have.property('responseQueue');
+                hookContext.responseQueue.should.be.an.Array;
+                hookContext.responseQueue.should.be.empty;
                 hookContext.response.statusCode = 200;
                 hookContext.response.content = intermediateData;
             } catch (error) {
@@ -873,8 +826,7 @@ function validatePostResponderHookContinueAfterInResponderHookInvoke(done, metho
     httpHooks.addHook({
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'post',
-        type: 'responder',
+        type: 'post-responder',
         callback: function (hookContext, complete) {
             if (!foundError) {
                 try {
@@ -885,11 +837,11 @@ function validatePostResponderHookContinueAfterInResponderHookInvoke(done, metho
                     hookContext.request.url.path.should.equal(url);
                     hookContext.request.headers.should.eql(requestHeaders);
                     hookContext.request.content.should.equal(requestData);
-                    hookContext.response.should.have.property('responses');
-                    hookContext.response.responses.should.be.an.Array;
-                    hookContext.response.responses.should.not.be.empty;
-                    hookContext.response.responses.should.have.a.lengthOf(1);
-                    var response = hookContext.response.responses[0];
+                    hookContext.should.have.property('responseQueue');
+                    hookContext.responseQueue.should.be.an.Array;
+                    hookContext.responseQueue.should.not.be.empty;
+                    hookContext.responseQueue.should.have.a.lengthOf(1);
+                    var response = hookContext.responseQueue[0];
                     response.statusCode.should.be.equal(200);
                     response.content.should.be.equal(intermediateData);
                     hookContext.replaceResponse(
@@ -916,7 +868,7 @@ function validatePostResponderHookContinueAfterInResponderHookInvoke(done, metho
     httpContext.response.on('end', function () {
         if (!foundError) {
             httpContext.should.have.properties([ 'request', 'response' ]);
-            httpContext.response.should.have.property('responses');
+            httpContext.should.have.property('responseQueue');
             httpContext.response.statusCode.should.equal(200);
             httpContext.response._headers.should.eql({
                 'Content-Type': 'application/json',
@@ -933,7 +885,7 @@ function validatePostResponderHookContinueAfterInResponderHookInvoke(done, metho
     httpContext.request.emit('end');
 }
 
-function validateMultipleInResponderHooksInvokeWithSuccessResponse(done, method) {
+function validateMultipleResponderHooksInvokeWithSuccessResponse(done, method) {
     var foundError = false;
     var url = '/my/documents?file=README.md';
     var dataBuffer = new Buffer('a!_ ][');
@@ -951,7 +903,6 @@ function validateMultipleInResponderHooksInvokeWithSuccessResponse(done, method)
     var hook1 = {
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'in',
         type: 'responder',
         callback: function (hookContext, complete) {
             try {
@@ -962,9 +913,9 @@ function validateMultipleInResponderHooksInvokeWithSuccessResponse(done, method)
                 hookContext.request.url.path.should.equal(url);
                 hookContext.request.headers.should.eql(headers);
                 hookContext.request.content.should.equal(data);
-                hookContext.response.should.have.property('responses');
-                hookContext.response.responses.should.be.an.Array;
-                hookContext.response.responses.should.be.empty;
+                hookContext.should.have.property('responseQueue');
+                hookContext.responseQueue.should.be.an.Array;
+                hookContext.responseQueue.should.be.empty;
                 hookContext.response.statusCode = 200;
                 hookContext.response.content = 'hook1';
             } catch (error) {
@@ -979,7 +930,6 @@ function validateMultipleInResponderHooksInvokeWithSuccessResponse(done, method)
     var hook2 = {
         method: method,
         urlPattern: '/my/documents?file=:filename',
-        order: 'in',
         type: 'responder',
         callback: function (hookContext, complete) {
             try {
@@ -990,11 +940,11 @@ function validateMultipleInResponderHooksInvokeWithSuccessResponse(done, method)
                 hookContext.request.url.path.should.equal(url);
                 hookContext.request.headers.should.eql(headers);
                 hookContext.request.content.should.equal(data);
-                hookContext.response.should.have.property('responses');
-                hookContext.response.responses.should.be.an.Array;
-                hookContext.response.responses.should.not.be.empty;
-                hookContext.response.responses.should.have.a.lengthOf(1);
-                hookContext.response.responses[0].should.include({
+                hookContext.should.have.property('responseQueue');
+                hookContext.responseQueue.should.be.an.Array;
+                hookContext.responseQueue.should.not.be.empty;
+                hookContext.responseQueue.should.have.a.lengthOf(1);
+                hookContext.responseQueue[0].should.include({
                     statusCode: 200,
                     headers: {},
                     content: 'hook1'
@@ -1022,7 +972,7 @@ function validateMultipleInResponderHooksInvokeWithSuccessResponse(done, method)
         if (!foundError) {
             try {
                 httpContext.should.have.properties([ 'request', 'response' ]);
-                httpContext.response.should.have.property('responses');
+                httpContext.should.have.property('responseQueue');
                 httpContext.response.statusCode.should.equal(202);
                 httpContext.response._headers.should.have.properties(['Content-Type', 'Content-Length']);
                 httpContext.response._data.should.not.be.empty;
@@ -1077,14 +1027,14 @@ describe('HttpHooks', function () {
         it('should have a default set of publicly accessible functions', function () {
             var instanceFunctions = [
                 'addHook', 'addHooks', 'removeHooks', 'removeHook', 'clear',
-                'get', 'getListener', 'getPreListener', 'getInListener', 'getPostListener',
-                'getResponder', 'getPreResponder', 'getInResponder', 'getPostResponder',
-                'put', 'putListener', 'putPreListener', 'putInListener', 'putPostListener',
-                'putResponder', 'putPreResponder', 'putInResponder', 'putPostResponder',
-                'post', 'postListener', 'postPreListener', 'postInListener', 'postPostListener',
-                'postResponder', 'postPreResponder', 'postInResponder', 'postPostResponder',
-                'delete', 'deleteListener', 'deletePreListener', 'deleteInListener', 'deletePostListener',
-                'deleteResponder', 'deletePreResponder', 'deleteInResponder', 'deletePostResponder',
+                'get', 'getListener', 'getRequestListener', 'getPreListener', 'getPostListener',
+                'getResponseListener', 'getResponder', 'getPreResponder', 'getPostResponder',
+                'put', 'putListener', 'putRequestListener', 'putPreListener', 'putPostListener',
+                'putResponseListener', 'putResponder', 'putPreResponder', 'putPostResponder',
+                'post', 'postListener', 'postRequestListener', 'postPreListener', 'postPostListener',
+                'postResponseListener', 'postResponder', 'postPreResponder', 'postPostResponder',
+                'delete', 'deleteListener', 'deleteRequestListener', 'deletePreListener', 'deletePostListener',
+                'deleteResponseListener', 'deleteResponder', 'deletePreResponder', 'deletePostResponder',
                 'dispatch', 'onNoMatch', 'asObserver'
             ];
             var httpHooks = new HttpHooks();
@@ -1136,6 +1086,7 @@ describe('HttpHooks', function () {
                 try {
                     httpHooks = new HttpHooks([hook]);
                 } catch (e) {
+                    throw e;
                     error = true;
                 }
 
@@ -1144,7 +1095,6 @@ describe('HttpHooks', function () {
                     httpHooks.hooks,
                     hook.urlPattern,
                     hook.method.toLowerCase(),
-                    hook.order.toLowerCase(),
                     hook.type.toLowerCase());
             });
         });
@@ -1196,7 +1146,6 @@ describe('HttpHooks', function () {
                     httpHooks.hooks,
                     hook.urlPattern,
                     hook.method.toLowerCase(),
-                    hook.order.toLowerCase(),
                     hook.type.toLowerCase());
             });
         });
@@ -1249,7 +1198,6 @@ describe('HttpHooks', function () {
                     httpHooks.hooks,
                     hook.urlPattern,
                     hook.method.toLowerCase(),
-                    hook.order.toLowerCase(),
                     hook.type.toLowerCase());
             });
         });
@@ -1405,48 +1353,26 @@ describe('HttpHooks', function () {
         });
     });
 
-    describe('#get(value1, value2, value3, value4)', function () {
+    describe('#get(value1, value2, value3)', function () {
         it('should not throw an error when the first two arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.get('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'in', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'responder');
             });
         });
 
         it('should not throw an error when the first three arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
+                constants.hookTypes.map(expandStringToLowerAndUpperCase).forEach(function (typeSet) {
+                    typeSet.forEach(function (type) {
                         var httpHooks = new HttpHooks();
-                        httpHooks.get('/', callback, order);
+                        httpHooks.get('/', callback, type);
                         validateSingleHooksIsSet(
                             httpHooks.hooks,
                             '/',
                             'get',
-                            order.toLowerCase(),
-                            'responder');
-                    });
-                });
-            });
-        });
-
-        it('should not throw an error when the first four arguments are passed and are valid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
-                        constants.hookTypes.map(expandStringToLowerAndUpperCase).forEach(function (typeSet) {
-                            typeSet.forEach(function (type) {
-                                var httpHooks = new HttpHooks();
-                                httpHooks.get('/', callback, order, type);
-                                validateSingleHooksIsSet(
-                                    httpHooks.hooks,
-                                    '/',
-                                    'get',
-                                    order.toLowerCase(),
-                                    type.toLowerCase());
-                            });
-                        });
+                            type.toLowerCase());
                     });
                 });
             });
@@ -1525,121 +1451,61 @@ describe('HttpHooks', function () {
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is of an invalid type', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is of an invalid type', function () {
             validHookCallbackValues.forEach(function (callback) {
-                nonStringTypes.forEach(function (order) {
+                nonStringTypes.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.get('/', callback, order);
+                        httpHooks.get('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof order);
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is invalid', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is invalid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                invalidOrderValues.forEach(function (order) {
+                invalidTypeValues.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.get('/', callback, order);
+                        httpHooks.get('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: \'' + order + '\'');
+                    error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
-                });
-            });
-        });
-
-        it('should throw an error when the first, second and third argument are valid and provided but the fourth is invalid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.forEach(function (order) {
-                    invalidTypeValues.forEach(function (type) {
-                        var error = false;
-                        var httpHooks = new HttpHooks();
-                        try {
-                            httpHooks.get('/', callback, order, type);
-                        } catch (e) {
-                            error = true;
-                        }
-
-                        error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
-                        validateHooksCollectionIsEmpty(httpHooks.hooks);
-                    });
-                });
-            });
-        });
-
-        it('should throw an error when the first, second and third argument are valid and provided but the fourth is of an invalid type', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.forEach(function (order) {
-                    nonStringTypes.forEach(function (type) {
-                        var error = false;
-                        var httpHooks = new HttpHooks();
-                        try {
-                            httpHooks.get('/', callback, order, type);
-                        } catch (e) {
-                            error = true;
-                        }
-
-                        error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
-                        validateHooksCollectionIsEmpty(httpHooks.hooks);
-                    });
                 });
             });
         });
     });
 
-    describe('#put(value1, value2, value3, value4)', function () {
+    describe('#put(value1, value2, value3)', function () {
         it('should not throw an error when the first two arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.put('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'in', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'responder');
             });
         });
 
         it('should not throw an error when the first three arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
+                constants.hookTypes.map(expandStringToLowerAndUpperCase).forEach(function (typeSet) {
+                    typeSet.forEach(function (type) {
                         var httpHooks = new HttpHooks();
-                        httpHooks.put('/', callback, order);
+                        httpHooks.put('/', callback, type);
                         validateSingleHooksIsSet(
                             httpHooks.hooks,
                             '/',
                             'put',
-                            order.toLowerCase(),
-                            'responder');
-                    });
-                });
-            });
-        });
-
-        it('should not throw an error when the first four arguments are passed and are valid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
-                        constants.hookTypes.map(expandStringToLowerAndUpperCase).forEach(function (typeSet) {
-                            typeSet.forEach(function (type) {
-                                var httpHooks = new HttpHooks();
-                                httpHooks.put('/', callback, order, type);
-                                validateSingleHooksIsSet(
-                                    httpHooks.hooks,
-                                    '/',
-                                    'put',
-                                    order.toLowerCase(),
-                                    type.toLowerCase());
-                            });
-                        });
+                            type.toLowerCase());
                     });
                 });
             });
@@ -1718,121 +1584,61 @@ describe('HttpHooks', function () {
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is of an invalid type', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is of an invalid type', function () {
             validHookCallbackValues.forEach(function (callback) {
-                nonStringTypes.forEach(function (order) {
+                nonStringTypes.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.put('/', callback, order);
+                        httpHooks.put('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof order);
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is invalid', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is invalid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                invalidOrderValues.forEach(function (order) {
+                invalidTypeValues.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.put('/', callback, order);
+                        httpHooks.put('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: \'' + order + '\'');
+                    error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
-                });
-            });
-        });
-
-        it('should throw an error when the first, second and third argument are valid and provided but the fourth is invalid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.forEach(function (order) {
-                    invalidTypeValues.forEach(function (type) {
-                        var error = false;
-                        var httpHooks = new HttpHooks();
-                        try {
-                            httpHooks.put('/', callback, order, type);
-                        } catch (e) {
-                            error = true;
-                        }
-
-                        error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
-                        validateHooksCollectionIsEmpty(httpHooks.hooks);
-                    });
-                });
-            });
-        });
-
-        it('should throw an error when the first, second and third argument are valid and provided but the fourth is of an invalid type', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.forEach(function (order) {
-                    nonStringTypes.forEach(function (type) {
-                        var error = false;
-                        var httpHooks = new HttpHooks();
-                        try {
-                            httpHooks.put('/', callback, order, type);
-                        } catch (e) {
-                            error = true;
-                        }
-
-                        error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
-                        validateHooksCollectionIsEmpty(httpHooks.hooks);
-                    });
                 });
             });
         });
     });
 
-    describe('#post(value1, value2, value3, value4)', function () {
+    describe('#post(value1, value2, value3)', function () {
         it('should not throw an error when the first two arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.post('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'in', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'responder');
             });
         });
 
         it('should not throw an error when the first three arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
+                constants.hookTypes.map(expandStringToLowerAndUpperCase).forEach(function (typeSet) {
+                    typeSet.forEach(function (type) {
                         var httpHooks = new HttpHooks();
-                        httpHooks.post('/', callback, order);
+                        httpHooks.post('/', callback, type);
                         validateSingleHooksIsSet(
                             httpHooks.hooks,
                             '/',
                             'post',
-                            order.toLowerCase(),
-                            'responder');
-                    });
-                });
-            });
-        });
-
-        it('should not throw an error when the first four arguments are passed and are valid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
-                        constants.hookTypes.map(expandStringToLowerAndUpperCase).forEach(function (typeSet) {
-                            typeSet.forEach(function (type) {
-                                var httpHooks = new HttpHooks();
-                                httpHooks.post('/', callback, order, type);
-                                validateSingleHooksIsSet(
-                                    httpHooks.hooks,
-                                    '/',
-                                    'post',
-                                    order.toLowerCase(),
-                                    type.toLowerCase());
-                            });
-                        });
+                            type.toLowerCase());
                     });
                 });
             });
@@ -1911,121 +1717,61 @@ describe('HttpHooks', function () {
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is of an invalid type', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is of an invalid type', function () {
             validHookCallbackValues.forEach(function (callback) {
-                nonStringTypes.forEach(function (order) {
+                nonStringTypes.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.post('/', callback, order);
+                        httpHooks.post('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof order);
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is invalid', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is invalid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                invalidOrderValues.forEach(function (order) {
+                invalidTypeValues.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.post('/', callback, order);
+                        httpHooks.post('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: \'' + order + '\'');
+                    error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
-                });
-            });
-        });
-
-        it('should throw an error when the first, second and third argument are valid and provided but the fourth is invalid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.forEach(function (order) {
-                    invalidTypeValues.forEach(function (type) {
-                        var error = false;
-                        var httpHooks = new HttpHooks();
-                        try {
-                            httpHooks.post('/', callback, order, type);
-                        } catch (e) {
-                            error = true;
-                        }
-
-                        error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
-                        validateHooksCollectionIsEmpty(httpHooks.hooks);
-                    });
-                });
-            });
-        });
-
-        it('should throw an error when the first, second and third argument are valid and provided but the fourth is of an invalid type', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.forEach(function (order) {
-                    nonStringTypes.forEach(function (type) {
-                        var error = false;
-                        var httpHooks = new HttpHooks();
-                        try {
-                            httpHooks.post('/', callback, order, type);
-                        } catch (e) {
-                            error = true;
-                        }
-
-                        error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
-                        validateHooksCollectionIsEmpty(httpHooks.hooks);
-                    });
                 });
             });
         });
     });
 
-    describe('#delete(value1, value2, value3, value4)', function () {
+    describe('#delete(value1, value2, value3)', function () {
         it('should not throw an error when the first two arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.delete('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'in', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'responder');
             });
         });
 
         it('should not throw an error when the first three arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
+                constants.hookTypes.map(expandStringToLowerAndUpperCase).forEach(function (typeSet) {
+                    typeSet.forEach(function (type) {
                         var httpHooks = new HttpHooks();
-                        httpHooks.delete('/', callback, order);
+                        httpHooks.delete('/', callback, type);
                         validateSingleHooksIsSet(
                             httpHooks.hooks,
                             '/',
                             'delete',
-                            order.toLowerCase(),
-                            'responder');
-                    });
-                });
-            });
-        });
-
-        it('should not throw an error when the first four arguments are passed and are valid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
-                        constants.hookTypes.map(expandStringToLowerAndUpperCase).forEach(function (typeSet) {
-                            typeSet.forEach(function (type) {
-                                var httpHooks = new HttpHooks();
-                                httpHooks.delete('/', callback, order, type);
-                                validateSingleHooksIsSet(
-                                    httpHooks.hooks,
-                                    '/',
-                                    'delete',
-                                    order.toLowerCase(),
-                                    type.toLowerCase());
-                            });
-                        });
+                            type.toLowerCase());
                     });
                 });
             });
@@ -2104,74 +1850,36 @@ describe('HttpHooks', function () {
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is of an invalid type', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is of an invalid type', function () {
             validHookCallbackValues.forEach(function (callback) {
-                nonStringTypes.forEach(function (order) {
+                nonStringTypes.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.delete('/', callback, order);
+                        httpHooks.delete('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof order);
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is invalid', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is invalid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                invalidOrderValues.forEach(function (order) {
+                invalidTypeValues.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.delete('/', callback, order);
+                        httpHooks.delete('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: \'' + order + '\'');
+                    error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
-                });
-            });
-        });
-
-        it('should throw an error when the first, second and third argument are valid and provided but the fourth is invalid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.forEach(function (order) {
-                    invalidTypeValues.forEach(function (type) {
-                        var error = false;
-                        var httpHooks = new HttpHooks();
-                        try {
-                            httpHooks.delete('/', callback, order, type);
-                        } catch (e) {
-                            error = true;
-                        }
-
-                        error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
-                        validateHooksCollectionIsEmpty(httpHooks.hooks);
-                    });
-                });
-            });
-        });
-
-        it('should throw an error when the first, second and third argument are valid and provided but the fourth is of an invalid type', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.forEach(function (order) {
-                    nonStringTypes.forEach(function (type) {
-                        var error = false;
-                        var httpHooks = new HttpHooks();
-                        try {
-                            httpHooks.delete('/', callback, order, type);
-                        } catch (e) {
-                            error = true;
-                        }
-
-                        error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
-                        validateHooksCollectionIsEmpty(httpHooks.hooks);
-                    });
                 });
             });
         });
@@ -2182,22 +1890,21 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.getListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'in', 'listener');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'response-listener');
             });
         });
 
         it('should not throw an error when the first three arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
+                constants.hookListenerPrefixes.map(expandStringToLowerAndUpperCase).forEach(function (prefixSet) {
+                    prefixSet.forEach(function (prefix) {
                         var httpHooks = new HttpHooks();
-                        httpHooks.getListener('/', callback, order);
+                        httpHooks.getListener('/', callback, prefix);
                         validateSingleHooksIsSet(
                             httpHooks.hooks,
                             '/',
                             'get',
-                            order.toLowerCase(),
-                            'listener');
+                            prefix.toLowerCase() + '-listener');
                     });
                 });
             });
@@ -2276,35 +1983,35 @@ describe('HttpHooks', function () {
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is of an invalid type', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is of an invalid type', function () {
             validHookCallbackValues.forEach(function (callback) {
-                nonStringTypes.forEach(function (order) {
+                nonStringTypes.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.getListener('/', callback, order);
+                        httpHooks.getListener('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof order);
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is invalid', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is invalid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                invalidOrderValues.forEach(function (order) {
+                invalidTypeValues.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.getListener('/', callback, order);
+                        httpHooks.getListener('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: \'' + order + '\'');
+                    error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
@@ -2316,22 +2023,21 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.putListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'in', 'listener');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'response-listener');
             });
         });
 
         it('should not throw an error when the first three arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
+                constants.hookListenerPrefixes.map(expandStringToLowerAndUpperCase).forEach(function (prefixSet) {
+                    prefixSet.forEach(function (prefix) {
                         var httpHooks = new HttpHooks();
-                        httpHooks.putListener('/', callback, order);
+                        httpHooks.putListener('/', callback, prefix);
                         validateSingleHooksIsSet(
                             httpHooks.hooks,
                             '/',
                             'put',
-                            order.toLowerCase(),
-                            'listener');
+                            prefix.toLowerCase() + '-listener');
                     });
                 });
             });
@@ -2410,35 +2116,35 @@ describe('HttpHooks', function () {
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is of an invalid type', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is of an invalid type', function () {
             validHookCallbackValues.forEach(function (callback) {
-                nonStringTypes.forEach(function (order) {
+                nonStringTypes.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.putListener('/', callback, order);
+                        httpHooks.putListener('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof order);
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is invalid', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is invalid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                invalidOrderValues.forEach(function (order) {
+                invalidTypeValues.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.putListener('/', callback, order);
+                        httpHooks.putListener('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: \'' + order + '\'');
+                    error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
@@ -2450,22 +2156,21 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.postListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'in', 'listener');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'response-listener');
             });
         });
 
         it('should not throw an error when the first three arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
+                constants.hookListenerPrefixes.map(expandStringToLowerAndUpperCase).forEach(function (prefixSet) {
+                    prefixSet.forEach(function (prefix) {
                         var httpHooks = new HttpHooks();
-                        httpHooks.postListener('/', callback, order);
+                        httpHooks.postListener('/', callback, prefix);
                         validateSingleHooksIsSet(
                             httpHooks.hooks,
                             '/',
                             'post',
-                            order.toLowerCase(),
-                            'listener');
+                            prefix.toLowerCase() + '-listener');
                     });
                 });
             });
@@ -2544,35 +2249,35 @@ describe('HttpHooks', function () {
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is of an invalid type', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is of an invalid type', function () {
             validHookCallbackValues.forEach(function (callback) {
-                nonStringTypes.forEach(function (order) {
+                nonStringTypes.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.postListener('/', callback, order);
+                        httpHooks.postListener('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof order);
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is invalid', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is invalid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                invalidOrderValues.forEach(function (order) {
+                invalidTypeValues.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.postListener('/', callback, order);
+                        httpHooks.postListener('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: \'' + order + '\'');
+                    error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
@@ -2584,22 +2289,21 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.deleteListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'in', 'listener');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'response-listener');
             });
         });
 
         it('should not throw an error when the first three arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
+                constants.hookListenerPrefixes.map(expandStringToLowerAndUpperCase).forEach(function (prefixSet) {
+                    prefixSet.forEach(function (prefix) {
                         var httpHooks = new HttpHooks();
-                        httpHooks.deleteListener('/', callback, order);
+                        httpHooks.deleteListener('/', callback, prefix);
                         validateSingleHooksIsSet(
                             httpHooks.hooks,
                             '/',
                             'delete',
-                            order.toLowerCase(),
-                            'listener');
+                            prefix.toLowerCase() + '-listener');
                     });
                 });
             });
@@ -2678,35 +2382,35 @@ describe('HttpHooks', function () {
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is of an invalid type', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is of an invalid type', function () {
             validHookCallbackValues.forEach(function (callback) {
-                nonStringTypes.forEach(function (order) {
+                nonStringTypes.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.deleteListener('/', callback, order);
+                        httpHooks.deleteListener('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof order);
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is invalid', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is invalid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                invalidOrderValues.forEach(function (order) {
+                invalidTypeValues.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.deleteListener('/', callback, order);
+                        httpHooks.deleteListener('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: \'' + order + '\'');
+                    error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
@@ -2718,22 +2422,21 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.getResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'in', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'responder');
             });
         });
 
         it('should not throw an error when the first three arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
+                constants.hookResponderPrefixes.map(expandStringToLowerAndUpperCase).forEach(function (prefixSet) {
+                    prefixSet.forEach(function (prefix) {
                         var httpHooks = new HttpHooks();
-                        httpHooks.getResponder('/', callback, order);
+                        httpHooks.getResponder('/', callback, prefix);
                         validateSingleHooksIsSet(
                             httpHooks.hooks,
                             '/',
                             'get',
-                            order.toLowerCase(),
-                            'responder');
+                            prefix === '' ? 'responder' : prefix.toLowerCase() + '-responder');
                     });
                 });
             });
@@ -2812,35 +2515,35 @@ describe('HttpHooks', function () {
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is of an invalid type', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is of an invalid type', function () {
             validHookCallbackValues.forEach(function (callback) {
-                nonStringTypes.forEach(function (order) {
+                nonStringTypes.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.getResponder('/', callback, order);
+                        httpHooks.getResponder('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof order);
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is invalid', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is invalid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                invalidOrderValues.forEach(function (order) {
+                invalidTypeValues.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.getResponder('/', callback, order);
+                        httpHooks.getResponder('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: \'' + order + '\'');
+                    error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
@@ -2852,22 +2555,21 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.putResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'in', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'responder');
             });
         });
 
         it('should not throw an error when the first three arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
+                constants.hookResponderPrefixes.map(expandStringToLowerAndUpperCase).forEach(function (prefixSet) {
+                    prefixSet.forEach(function (prefix) {
                         var httpHooks = new HttpHooks();
-                        httpHooks.putResponder('/', callback, order);
+                        httpHooks.putResponder('/', callback, prefix);
                         validateSingleHooksIsSet(
                             httpHooks.hooks,
                             '/',
                             'put',
-                            order.toLowerCase(),
-                            'responder');
+                            prefix === '' ? 'responder' : prefix.toLowerCase() + '-responder');
                     });
                 });
             });
@@ -2946,35 +2648,35 @@ describe('HttpHooks', function () {
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is of an invalid type', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is of an invalid type', function () {
             validHookCallbackValues.forEach(function (callback) {
-                nonStringTypes.forEach(function (order) {
+                nonStringTypes.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.putResponder('/', callback, order);
+                        httpHooks.putResponder('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof order);
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is invalid', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is invalid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                invalidOrderValues.forEach(function (order) {
+                invalidTypeValues.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.putResponder('/', callback, order);
+                        httpHooks.putResponder('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: \'' + order + '\'');
+                    error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
@@ -2986,22 +2688,21 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.postResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'in', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'responder');
             });
         });
 
         it('should not throw an error when the first three arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
+                constants.hookResponderPrefixes.map(expandStringToLowerAndUpperCase).forEach(function (prefixSet) {
+                    prefixSet.forEach(function (prefix) {
                         var httpHooks = new HttpHooks();
-                        httpHooks.postResponder('/', callback, order);
+                        httpHooks.postResponder('/', callback, prefix);
                         validateSingleHooksIsSet(
                             httpHooks.hooks,
                             '/',
                             'post',
-                            order.toLowerCase(),
-                            'responder');
+                            prefix === '' ? 'responder' : prefix.toLowerCase() + '-responder');
                     });
                 });
             });
@@ -3080,35 +2781,35 @@ describe('HttpHooks', function () {
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is of an invalid type', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is of an invalid type', function () {
             validHookCallbackValues.forEach(function (callback) {
-                nonStringTypes.forEach(function (order) {
+                nonStringTypes.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.postResponder('/', callback, order);
+                        httpHooks.postResponder('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof order);
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is invalid', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is invalid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                invalidOrderValues.forEach(function (order) {
+                invalidTypeValues.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.postResponder('/', callback, order);
+                        httpHooks.postResponder('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: \'' + order + '\'');
+                    error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
@@ -3120,22 +2821,21 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.deleteResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'in', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'responder');
             });
         });
 
         it('should not throw an error when the first three arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                constants.hookOrders.map(expandStringToLowerAndUpperCase).forEach(function (orderSet) {
-                    orderSet.forEach(function (order) {
+                constants.hookResponderPrefixes.map(expandStringToLowerAndUpperCase).forEach(function (prefixSet) {
+                    prefixSet.forEach(function (prefix) {
                         var httpHooks = new HttpHooks();
-                        httpHooks.deleteResponder('/', callback, order);
+                        httpHooks.deleteResponder('/', callback, prefix);
                         validateSingleHooksIsSet(
                             httpHooks.hooks,
                             '/',
                             'delete',
-                            order.toLowerCase(),
-                            'responder');
+                            prefix === '' ? 'responder' : prefix.toLowerCase() + '-responder');
                     });
                 });
             });
@@ -3214,37 +2914,370 @@ describe('HttpHooks', function () {
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is of an invalid type', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is of an invalid type', function () {
             validHookCallbackValues.forEach(function (callback) {
-                nonStringTypes.forEach(function (order) {
+                nonStringTypes.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.deleteResponder('/', callback, order);
+                        httpHooks.deleteResponder('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof order);
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof type);
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
             });
         });
 
-        it('should throw an error when the first and second argument are valid and provided but the thrid is invalid', function () {
+        it('should throw an error when the first and second argument are valid and provided but the third is invalid', function () {
             validHookCallbackValues.forEach(function (callback) {
-                invalidOrderValues.forEach(function (order) {
+                invalidTypeValues.forEach(function (type) {
                     var error = false;
                     var httpHooks = new HttpHooks();
                     try {
-                        httpHooks.deleteResponder('/', callback, order);
+                        httpHooks.deleteResponder('/', callback, type);
                     } catch (e) {
                         error = true;
                     }
 
-                    error.should.equal(true, 'Expected throw for item of type: \'' + order + '\'');
+                    error.should.equal(true, 'Expected throw for item of type: \'' + type + '\'');
                     validateHooksCollectionIsEmpty(httpHooks.hooks);
                 });
+            });
+        });
+    });
+
+
+    describe('#getRequestListener(value1, value2)', function () {
+        it('should not throw an error when the first two arguments are passed and are valid', function () {
+            validHookCallbackValues.forEach(function (callback) {
+                var httpHooks = new HttpHooks();
+                httpHooks.getRequestListener('/', callback);
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'request-listener');
+            });
+        });
+
+        it('should throw an error when no arguments are provided', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.getRequestListener();
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is not of a valid type', function () {
+            nonStringTypes.forEach(function (urlPattern) {
+                validHookCallbackValues.forEach(function (callback) {
+                    var error = false;
+                    var httpHooks = new HttpHooks();
+                    try {
+                        httpHooks.getRequestListener(urlPattern, callback);
+                    } catch (e) {
+                        error = true;
+                    }
+
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
+                    validateHooksCollectionIsEmpty(httpHooks.hooks);
+                });
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but not the required second', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.getRequestListener('/');
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
+            nonFunctionTypes.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.getRequestListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
+            invalidHookCallbackValues.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.getRequestListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+    });
+
+    describe('#putRequestListener(value1, value2)', function () {
+        it('should not throw an error when the first two arguments are passed and are valid', function () {
+            validHookCallbackValues.forEach(function (callback) {
+                var httpHooks = new HttpHooks();
+                httpHooks.putRequestListener('/', callback);
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'request-listener');
+            });
+        });
+
+        it('should throw an error when no arguments are provided', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.putRequestListener();
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is not of a valid type', function () {
+            nonStringTypes.forEach(function (urlPattern) {
+                validHookCallbackValues.forEach(function (callback) {
+                    var error = false;
+                    var httpHooks = new HttpHooks();
+                    try {
+                        httpHooks.putRequestListener(urlPattern, callback);
+                    } catch (e) {
+                        error = true;
+                    }
+
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
+                    validateHooksCollectionIsEmpty(httpHooks.hooks);
+                });
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but not the required second', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.putRequestListener('/');
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
+            nonFunctionTypes.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.putRequestListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
+            invalidHookCallbackValues.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.putRequestListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+    });
+
+    describe('#postRequestListener(value1, value2)', function () {
+        it('should not throw an error when the first two arguments are passed and are valid', function () {
+            validHookCallbackValues.forEach(function (callback) {
+                var httpHooks = new HttpHooks();
+                httpHooks.postRequestListener('/', callback);
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'request-listener');
+            });
+        });
+
+        it('should throw an error when no arguments are provided', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.postRequestListener();
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is not of a valid type', function () {
+            nonStringTypes.forEach(function (urlPattern) {
+                validHookCallbackValues.forEach(function (callback) {
+                    var error = false;
+                    var httpHooks = new HttpHooks();
+                    try {
+                        httpHooks.postRequestListener(urlPattern, callback);
+                    } catch (e) {
+                        error = true;
+                    }
+
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
+                    validateHooksCollectionIsEmpty(httpHooks.hooks);
+                });
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but not the required second', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.postRequestListener('/');
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
+            nonFunctionTypes.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.postRequestListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
+            invalidHookCallbackValues.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.postRequestListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+    });
+
+    describe('#deleteRequestListener(value1, value2)', function () {
+        it('should not throw an error when the first two arguments are passed and are valid', function () {
+            validHookCallbackValues.forEach(function (callback) {
+                var httpHooks = new HttpHooks();
+                httpHooks.deleteRequestListener('/', callback);
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'request-listener');
+            });
+        });
+
+        it('should throw an error when no arguments are provided', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.deleteRequestListener();
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is not of a valid type', function () {
+            nonStringTypes.forEach(function (urlPattern) {
+                validHookCallbackValues.forEach(function (callback) {
+                    var error = false;
+                    var httpHooks = new HttpHooks();
+                    try {
+                        httpHooks.deleteRequestListener(urlPattern, callback);
+                    } catch (e) {
+                        error = true;
+                    }
+
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
+                    validateHooksCollectionIsEmpty(httpHooks.hooks);
+                });
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but not the required second', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.deleteRequestListener('/');
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
+            nonFunctionTypes.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.deleteRequestListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
+            invalidHookCallbackValues.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.deleteRequestListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
             });
         });
     });
@@ -3254,7 +3287,7 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.getPreListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'pre', 'listener');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'pre-listener');
             });
         });
 
@@ -3337,7 +3370,7 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.putPreListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'pre', 'listener');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'pre-listener');
             });
         });
 
@@ -3420,7 +3453,7 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.postPreListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'pre', 'listener');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'pre-listener');
             });
         });
 
@@ -3503,7 +3536,7 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.deletePreListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'pre', 'listener');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'pre-listener');
             });
         });
 
@@ -3581,344 +3614,12 @@ describe('HttpHooks', function () {
         });
     });
 
-    describe('#getInListener(value1, value2)', function () {
-        it('should not throw an error when the first two arguments are passed and are valid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                var httpHooks = new HttpHooks();
-                httpHooks.getInListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'in', 'listener');
-            });
-        });
-
-        it('should throw an error when no arguments are provided', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.getInListener();
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is not of a valid type', function () {
-            nonStringTypes.forEach(function (urlPattern) {
-                validHookCallbackValues.forEach(function (callback) {
-                    var error = false;
-                    var httpHooks = new HttpHooks();
-                    try {
-                        httpHooks.getInListener(urlPattern, callback);
-                    } catch (e) {
-                        error = true;
-                    }
-
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
-                    validateHooksCollectionIsEmpty(httpHooks.hooks);
-                });
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but not the required second', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.getInListener('/');
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
-            nonFunctionTypes.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.getInListener('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
-            invalidHookCallbackValues.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.getInListener('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-    });
-
-    describe('#putInListener(value1, value2)', function () {
-        it('should not throw an error when the first two arguments are passed and are valid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                var httpHooks = new HttpHooks();
-                httpHooks.putInListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'in', 'listener');
-            });
-        });
-
-        it('should throw an error when no arguments are provided', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.putInListener();
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is not of a valid type', function () {
-            nonStringTypes.forEach(function (urlPattern) {
-                validHookCallbackValues.forEach(function (callback) {
-                    var error = false;
-                    var httpHooks = new HttpHooks();
-                    try {
-                        httpHooks.putInListener(urlPattern, callback);
-                    } catch (e) {
-                        error = true;
-                    }
-
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
-                    validateHooksCollectionIsEmpty(httpHooks.hooks);
-                });
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but not the required second', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.putInListener('/');
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
-            nonFunctionTypes.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.putInListener('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
-            invalidHookCallbackValues.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.putInListener('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-    });
-
-    describe('#postInListener(value1, value2)', function () {
-        it('should not throw an error when the first two arguments are passed and are valid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                var httpHooks = new HttpHooks();
-                httpHooks.postInListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'in', 'listener');
-            });
-        });
-
-        it('should throw an error when no arguments are provided', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.postInListener();
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is not of a valid type', function () {
-            nonStringTypes.forEach(function (urlPattern) {
-                validHookCallbackValues.forEach(function (callback) {
-                    var error = false;
-                    var httpHooks = new HttpHooks();
-                    try {
-                        httpHooks.postInListener(urlPattern, callback);
-                    } catch (e) {
-                        error = true;
-                    }
-
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
-                    validateHooksCollectionIsEmpty(httpHooks.hooks);
-                });
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but not the required second', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.postInListener('/');
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
-            nonFunctionTypes.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.postInListener('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
-            invalidHookCallbackValues.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.postInListener('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-    });
-
-    describe('#deleteInListener(value1, value2)', function () {
-        it('should not throw an error when the first two arguments are passed and are valid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                var httpHooks = new HttpHooks();
-                httpHooks.deleteInListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'in', 'listener');
-            });
-        });
-
-        it('should throw an error when no arguments are provided', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.deleteInListener();
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is not of a valid type', function () {
-            nonStringTypes.forEach(function (urlPattern) {
-                validHookCallbackValues.forEach(function (callback) {
-                    var error = false;
-                    var httpHooks = new HttpHooks();
-                    try {
-                        httpHooks.deleteInListener(urlPattern, callback);
-                    } catch (e) {
-                        error = true;
-                    }
-
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
-                    validateHooksCollectionIsEmpty(httpHooks.hooks);
-                });
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but not the required second', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.deleteInListener('/');
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
-            nonFunctionTypes.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.deleteInListener('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
-            invalidHookCallbackValues.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.deleteInListener('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-    });
-
     describe('#getPostListener(value1, value2)', function () {
         it('should not throw an error when the first two arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.getPostListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'post', 'listener');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'post-listener');
             });
         });
 
@@ -4001,7 +3702,7 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.putPostListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'post', 'listener');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'post-listener');
             });
         });
 
@@ -4084,7 +3785,7 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.postPostListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'post', 'listener');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'post-listener');
             });
         });
 
@@ -4167,7 +3868,7 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.deletePostListener('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'post', 'listener');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'post-listener');
             });
         });
 
@@ -4245,12 +3946,345 @@ describe('HttpHooks', function () {
         });
     });
 
+
+    describe('#getResponseListener(value1, value2)', function () {
+        it('should not throw an error when the first two arguments are passed and are valid', function () {
+            validHookCallbackValues.forEach(function (callback) {
+                var httpHooks = new HttpHooks();
+                httpHooks.getResponseListener('/', callback);
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'response-listener');
+            });
+        });
+
+        it('should throw an error when no arguments are provided', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.getResponseListener();
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is not of a valid type', function () {
+            nonStringTypes.forEach(function (urlPattern) {
+                validHookCallbackValues.forEach(function (callback) {
+                    var error = false;
+                    var httpHooks = new HttpHooks();
+                    try {
+                        httpHooks.getResponseListener(urlPattern, callback);
+                    } catch (e) {
+                        error = true;
+                    }
+
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
+                    validateHooksCollectionIsEmpty(httpHooks.hooks);
+                });
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but not the required second', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.getResponseListener('/');
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
+            nonFunctionTypes.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.getResponseListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
+            invalidHookCallbackValues.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.getResponseListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+    });
+
+    describe('#putResponseListener(value1, value2)', function () {
+        it('should not throw an error when the first two arguments are passed and are valid', function () {
+            validHookCallbackValues.forEach(function (callback) {
+                var httpHooks = new HttpHooks();
+                httpHooks.putResponseListener('/', callback);
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'response-listener');
+            });
+        });
+
+        it('should throw an error when no arguments are provided', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.putResponseListener();
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is not of a valid type', function () {
+            nonStringTypes.forEach(function (urlPattern) {
+                validHookCallbackValues.forEach(function (callback) {
+                    var error = false;
+                    var httpHooks = new HttpHooks();
+                    try {
+                        httpHooks.putResponseListener(urlPattern, callback);
+                    } catch (e) {
+                        error = true;
+                    }
+
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
+                    validateHooksCollectionIsEmpty(httpHooks.hooks);
+                });
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but not the required second', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.putResponseListener('/');
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
+            nonFunctionTypes.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.putResponseListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
+            invalidHookCallbackValues.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.putResponseListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+    });
+
+    describe('#postResponseListener(value1, value2)', function () {
+        it('should not throw an error when the first two arguments are passed and are valid', function () {
+            validHookCallbackValues.forEach(function (callback) {
+                var httpHooks = new HttpHooks();
+                httpHooks.postResponseListener('/', callback);
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'response-listener');
+            });
+        });
+
+        it('should throw an error when no arguments are provided', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.postResponseListener();
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is not of a valid type', function () {
+            nonStringTypes.forEach(function (urlPattern) {
+                validHookCallbackValues.forEach(function (callback) {
+                    var error = false;
+                    var httpHooks = new HttpHooks();
+                    try {
+                        httpHooks.postResponseListener(urlPattern, callback);
+                    } catch (e) {
+                        error = true;
+                    }
+
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
+                    validateHooksCollectionIsEmpty(httpHooks.hooks);
+                });
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but not the required second', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.postResponseListener('/');
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
+            nonFunctionTypes.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.postResponseListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
+            invalidHookCallbackValues.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.postResponseListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+    });
+
+    describe('#deleteResponseListener(value1, value2)', function () {
+        it('should not throw an error when the first two arguments are passed and are valid', function () {
+            validHookCallbackValues.forEach(function (callback) {
+                var httpHooks = new HttpHooks();
+                httpHooks.deleteResponseListener('/', callback);
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'response-listener');
+            });
+        });
+
+        it('should throw an error when no arguments are provided', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.deleteResponseListener();
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is not of a valid type', function () {
+            nonStringTypes.forEach(function (urlPattern) {
+                validHookCallbackValues.forEach(function (callback) {
+                    var error = false;
+                    var httpHooks = new HttpHooks();
+                    try {
+                        httpHooks.deleteResponseListener(urlPattern, callback);
+                    } catch (e) {
+                        error = true;
+                    }
+
+                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
+                    validateHooksCollectionIsEmpty(httpHooks.hooks);
+                });
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but not the required second', function () {
+            var error = false;
+            var httpHooks = new HttpHooks();
+            try {
+                httpHooks.deleteResponseListener('/');
+            } catch (e) {
+                error = true;
+            }
+
+            error.should.equal(true);
+            validateHooksCollectionIsEmpty(httpHooks.hooks);
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
+            nonFunctionTypes.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.deleteResponseListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+
+        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
+            invalidHookCallbackValues.forEach(function (callback) {
+                var error = false;
+                var httpHooks = new HttpHooks();
+                try {
+                    httpHooks.deleteResponseListener('/', callback);
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
+                validateHooksCollectionIsEmpty(httpHooks.hooks);
+            });
+        });
+    });
+
     describe('#getPreResponder(value1, value2)', function () {
         it('should not throw an error when the first two arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.getPreResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'pre', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'pre-responder');
             });
         });
 
@@ -4333,7 +4367,7 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.putPreResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'pre', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'pre-responder');
             });
         });
 
@@ -4416,7 +4450,7 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.postPreResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'pre', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'pre-responder');
             });
         });
 
@@ -4499,7 +4533,7 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.deletePreResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'pre', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'pre-responder');
             });
         });
 
@@ -4577,344 +4611,12 @@ describe('HttpHooks', function () {
         });
     });
 
-    describe('#getInResponder(value1, value2)', function () {
-        it('should not throw an error when the first two arguments are passed and are valid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                var httpHooks = new HttpHooks();
-                httpHooks.getInResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'in', 'responder');
-            });
-        });
-
-        it('should throw an error when no arguments are provided', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.getInResponder();
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is not of a valid type', function () {
-            nonStringTypes.forEach(function (urlPattern) {
-                validHookCallbackValues.forEach(function (callback) {
-                    var error = false;
-                    var httpHooks = new HttpHooks();
-                    try {
-                        httpHooks.getInResponder(urlPattern, callback);
-                    } catch (e) {
-                        error = true;
-                    }
-
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
-                    validateHooksCollectionIsEmpty(httpHooks.hooks);
-                });
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but not the required second', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.getInResponder('/');
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
-            nonFunctionTypes.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.getInResponder('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
-            invalidHookCallbackValues.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.getInResponder('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-    });
-
-    describe('#putInResponder(value1, value2)', function () {
-        it('should not throw an error when the first two arguments are passed and are valid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                var httpHooks = new HttpHooks();
-                httpHooks.putInResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'in', 'responder');
-            });
-        });
-
-        it('should throw an error when no arguments are provided', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.putInResponder();
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is not of a valid type', function () {
-            nonStringTypes.forEach(function (urlPattern) {
-                validHookCallbackValues.forEach(function (callback) {
-                    var error = false;
-                    var httpHooks = new HttpHooks();
-                    try {
-                        httpHooks.putInResponder(urlPattern, callback);
-                    } catch (e) {
-                        error = true;
-                    }
-
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
-                    validateHooksCollectionIsEmpty(httpHooks.hooks);
-                });
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but not the required second', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.putInResponder('/');
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
-            nonFunctionTypes.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.putInResponder('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
-            invalidHookCallbackValues.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.putInResponder('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-    });
-
-    describe('#postInResponder(value1, value2)', function () {
-        it('should not throw an error when the first two arguments are passed and are valid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                var httpHooks = new HttpHooks();
-                httpHooks.postInResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'in', 'responder');
-            });
-        });
-
-        it('should throw an error when no arguments are provided', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.postInResponder();
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is not of a valid type', function () {
-            nonStringTypes.forEach(function (urlPattern) {
-                validHookCallbackValues.forEach(function (callback) {
-                    var error = false;
-                    var httpHooks = new HttpHooks();
-                    try {
-                        httpHooks.postInResponder(urlPattern, callback);
-                    } catch (e) {
-                        error = true;
-                    }
-
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
-                    validateHooksCollectionIsEmpty(httpHooks.hooks);
-                });
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but not the required second', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.postInResponder('/');
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
-            nonFunctionTypes.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.postInResponder('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
-            invalidHookCallbackValues.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.postInResponder('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-    });
-
-    describe('#deleteInResponder(value1, value2)', function () {
-        it('should not throw an error when the first two arguments are passed and are valid', function () {
-            validHookCallbackValues.forEach(function (callback) {
-                var httpHooks = new HttpHooks();
-                httpHooks.deleteInResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'in', 'responder');
-            });
-        });
-
-        it('should throw an error when no arguments are provided', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.deleteInResponder();
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is not of a valid type', function () {
-            nonStringTypes.forEach(function (urlPattern) {
-                validHookCallbackValues.forEach(function (callback) {
-                    var error = false;
-                    var httpHooks = new HttpHooks();
-                    try {
-                        httpHooks.deleteInResponder(urlPattern, callback);
-                    } catch (e) {
-                        error = true;
-                    }
-
-                    error.should.equal(true, 'Expected throw for item of type: ' + typeof urlPattern);
-                    validateHooksCollectionIsEmpty(httpHooks.hooks);
-                });
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but not the required second', function () {
-            var error = false;
-            var httpHooks = new HttpHooks();
-            try {
-                httpHooks.deleteInResponder('/');
-            } catch (e) {
-                error = true;
-            }
-
-            error.should.equal(true);
-            validateHooksCollectionIsEmpty(httpHooks.hooks);
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is of an invalid type', function () {
-            nonFunctionTypes.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.deleteInResponder('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-
-        it('should throw an error when the first argument is valid and provided but the second is invalid', function () {
-            invalidHookCallbackValues.forEach(function (callback) {
-                var error = false;
-                var httpHooks = new HttpHooks();
-                try {
-                    httpHooks.deleteInResponder('/', callback);
-                } catch (e) {
-                    error = true;
-                }
-
-                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
-                validateHooksCollectionIsEmpty(httpHooks.hooks);
-            });
-        });
-    });
-
     describe('#getPostResponder(value1, value2)', function () {
         it('should not throw an error when the first two arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.getPostResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'post', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'get', 'post-responder');
             });
         });
 
@@ -4997,7 +4699,7 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.putPostResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'post', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'put', 'post-responder');
             });
         });
 
@@ -5080,7 +4782,7 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.postPostResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'post', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'post', 'post-responder');
             });
         });
 
@@ -5163,7 +4865,7 @@ describe('HttpHooks', function () {
             validHookCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
                 httpHooks.deletePostResponder('/', callback);
-                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'post', 'responder');
+                validateSingleHooksIsSet(httpHooks.hooks, '/', 'delete', 'post-responder');
             });
         });
 
@@ -5321,211 +5023,226 @@ describe('HttpHooks', function () {
         });
 
         it('should find and invoke the defined hook for a GET pre-listener', function (done) {
-            validateHookInvoke(done, 'GET', 'pre', 'listener');
+            validateHookInvoke(done, 'GET', 'request-listener');
         });
 
-        it('should find and invoke the defined hook for a GET in-listener', function (done) {
-            validateHookInvoke(done, 'GET', 'in', 'listener');
+        it('should find and invoke the defined hook for a GET pre-listener', function (done) {
+            validateHookInvoke(done, 'GET', 'pre-listener');
         });
 
         it('should find and invoke the defined hook for a GET post-listener', function (done) {
-            validateHookInvoke(done, 'GET', 'post', 'listener');
+            validateHookInvoke(done, 'GET', 'post-listener');
+        });
+
+        it('should find and invoke the defined hook for a GET response-listener', function (done) {
+            validateHookInvoke(done, 'GET', 'response-listener');
         });
 
         it('should find and invoke the defined hook for a PUT pre-listener', function (done) {
-            validateHookInvoke(done, 'PUT', 'pre', 'listener');
+            validateHookInvoke(done, 'PUT', 'request-listener');
         });
 
-        it('should find and invoke the defined hook for a PUT in-listener', function (done) {
-            validateHookInvoke(done, 'PUT', 'in', 'listener');
+        it('should find and invoke the defined hook for a PUT pre-listener', function (done) {
+            validateHookInvoke(done, 'PUT', 'pre-listener');
         });
 
         it('should find and invoke the defined hook for a PUT post-listener', function (done) {
-            validateHookInvoke(done, 'PUT', 'post', 'listener');
+            validateHookInvoke(done, 'PUT', 'post-listener');
+        });
+
+        it('should find and invoke the defined hook for a PUT response-listener', function (done) {
+            validateHookInvoke(done, 'PUT', 'response-listener');
+        });
+
+        it('should find and invoke the defined hook for a POST request-listener', function (done) {
+            validateHookInvoke(done, 'PUT', 'request-listener');
         });
 
         it('should find and invoke the defined hook for a POST pre-listener', function (done) {
-            validateHookInvoke(done, 'POST', 'pre', 'listener');
-        });
-
-        it('should find and invoke the defined hook for a POST in-listener', function (done) {
-            validateHookInvoke(done, 'POST', 'in', 'listener');
+            validateHookInvoke(done, 'POST', 'pre-listener');
         });
 
         it('should find and invoke the defined hook for a POST post-listener', function (done) {
-            validateHookInvoke(done, 'POST', 'post', 'listener');
+            validateHookInvoke(done, 'POST', 'post-listener');
+        });
+
+        it('should find and invoke the defined hook for a POST response-listener', function (done) {
+            validateHookInvoke(done, 'POST', 'response-listener');
+        });
+
+        it('should find and invoke the defined hook for a DELETE request-listener', function (done) {
+            validateHookInvoke(done, 'DELETE', 'request-listener');
         });
 
         it('should find and invoke the defined hook for a DELETE pre-listener', function (done) {
-            validateHookInvoke(done, 'DELETE', 'pre', 'listener');
-        });
-
-        it('should find and invoke the defined hook for a DELETE in-listener', function (done) {
-            validateHookInvoke(done, 'DELETE', 'in', 'listener');
+            validateHookInvoke(done, 'DELETE', 'pre-listener');
         });
 
         it('should find and invoke the defined hook for a DELETE post-listener', function (done) {
-            validateHookInvoke(done, 'DELETE', 'post', 'listener');
+            validateHookInvoke(done, 'DELETE', 'post-listener');
         });
 
+        it('should find and invoke the defined hook for a DELETE response-listener', function (done) {
+            validateHookInvoke(done, 'DELETE', 'response-listener');
+        });
         it('should find and invoke the defined hook for a GET pre-responder', function (done) {
-            validateHookInvoke(done, 'GET', 'pre', 'responder');
+            validateHookInvoke(done, 'GET', 'pre-responder');
         });
 
-        it('should find and invoke the defined hook for a GET in-responder', function (done) {
-            validateHookInvoke(done, 'GET', 'in', 'responder');
+        it('should find and invoke the defined hook for a GET responder', function (done) {
+            validateHookInvoke(done, 'GET', 'responder');
         });
 
         it('should find and invoke the defined hook for a GET post-responder', function (done) {
-            validateHookInvoke(done, 'GET', 'post', 'responder');
+            validateHookInvoke(done, 'GET', 'post-responder');
         });
 
         it('should find and invoke the defined hook for a PUT pre-responder', function (done) {
-            validateHookInvoke(done, 'PUT', 'pre', 'responder');
+            validateHookInvoke(done, 'PUT', 'pre-responder');
         });
 
-        it('should find and invoke the defined hook for a PUT in-responder', function (done) {
-            validateHookInvoke(done, 'PUT', 'in', 'responder');
+        it('should find and invoke the defined hook for a PUT responder', function (done) {
+            validateHookInvoke(done, 'PUT', 'responder');
         });
 
         it('should find and invoke the defined hook for a PUT post-responder', function (done) {
-            validateHookInvoke(done, 'PUT', 'post', 'responder');
+            validateHookInvoke(done, 'PUT', 'post-responder');
         });
 
         it('should find and invoke the defined hook for a POST pre-responder', function (done) {
-            validateHookInvoke(done, 'POST', 'pre', 'responder');
+            validateHookInvoke(done, 'POST', 'pre-responder');
         });
 
         it('should find and invoke the defined hook for a POST in-responder', function (done) {
-            validateHookInvoke(done, 'POST', 'in', 'responder');
+            validateHookInvoke(done, 'POST', 'responder');
         });
 
         it('should find and invoke the defined hook for a POST post-responder', function (done) {
-            validateHookInvoke(done, 'POST', 'post', 'responder');
+            validateHookInvoke(done, 'POST', 'post-responder');
         });
 
         it('should find and invoke the defined hook for a DELETE pre-responder', function (done) {
-            validateHookInvoke(done, 'DELETE', 'pre', 'responder');
+            validateHookInvoke(done, 'DELETE', 'pre-responder');
         });
 
-        it('should find and invoke the defined hook for a DELETE in-responder', function (done) {
-            validateHookInvoke(done, 'DELETE', 'in', 'responder');
+        it('should find and invoke the defined hook for a DELETE responder', function (done) {
+            validateHookInvoke(done, 'DELETE', 'responder');
         });
 
         it('should find and invoke the defined hook for a DELETE post-responder', function (done) {
-            validateHookInvoke(done, 'DELETE', 'post', 'responder');
+            validateHookInvoke(done, 'DELETE', 'post-responder');
         });
 
-        it('should correcly invoke a GET pre-responder hook prior to an in-responder when there is a valid status code returned by the former', function (done) {
-            validatePreResponderHookSuccessBeforeInResponderHookInvoke(done, 'GET');
+        it('should correctly invoke a GET pre-responder hook prior to an in-responder when there is a valid status code returned by the former', function (done) {
+            validatePreResponderHookSuccessBeforeResponderHookInvoke(done, 'GET');
         });
 
-        it('should correcly invoke a PUT pre-responder hook prior to an in-responder when there is a valid status code returned by the former', function (done) {
-            validatePreResponderHookSuccessBeforeInResponderHookInvoke(done, 'PUT');
+        it('should correctly invoke a PUT pre-responder hook prior to an in-responder when there is a valid status code returned by the former', function (done) {
+            validatePreResponderHookSuccessBeforeResponderHookInvoke(done, 'PUT');
         });
 
-        it('should correcly invoke a POST pre-responder hook prior to an in-responder when there is a valid status code returned by the former', function (done) {
-            validatePreResponderHookSuccessBeforeInResponderHookInvoke(done, 'POST');
+        it('should correctly invoke a POST pre-responder hook prior to an in-responder when there is a valid status code returned by the former', function (done) {
+            validatePreResponderHookSuccessBeforeResponderHookInvoke(done, 'POST');
         });
 
-        it('should correcly invoke a DELETE pre-responder hook prior to an in-responder when there is a valid status code returned by the former', function (done) {
-            validatePreResponderHookSuccessBeforeInResponderHookInvoke(done, 'DELETE');
+        it('should correctly invoke a DELETE pre-responder hook prior to an in-responder when there is a valid status code returned by the former', function (done) {
+            validatePreResponderHookSuccessBeforeResponderHookInvoke(done, 'DELETE');
         });
 
-        it('should correcly respond to a GET request with a post-responder hook after an in-responder when there is a valid status code returned by the former', function (done) {
-            validatePostResponderHookSuccessAfterInResponderHookInvoke(done, 'GET');
+        it('should correctly respond to a GET request with a post-responder hook after an in-responder when there is a valid status code returned by the former', function (done) {
+            validatePostResponderHookSuccessAfterResponderHookInvoke(done, 'GET');
         });
 
-        it('should correcly respond to a PUT request with a post-responder hook after an in-responder when there is a valid status code returned by the former', function (done) {
-            validatePostResponderHookSuccessAfterInResponderHookInvoke(done, 'PUT');
+        it('should correctly respond to a PUT request with a post-responder hook after an in-responder when there is a valid status code returned by the former', function (done) {
+            validatePostResponderHookSuccessAfterResponderHookInvoke(done, 'PUT');
         });
 
-        it('should correcly respond to a POST request with a post-responder hook after an in-responder when there is a valid status code returned by the former', function (done) {
-            validatePostResponderHookSuccessAfterInResponderHookInvoke(done, 'POST');
+        it('should correctly respond to a POST request with a post-responder hook after an in-responder when there is a valid status code returned by the former', function (done) {
+            validatePostResponderHookSuccessAfterResponderHookInvoke(done, 'POST');
         });
 
-        it('should correcly respond to a DELETE request with a post-responder hook after an in-responder when there is a valid status code returned by the former', function (done) {
-            validatePostResponderHookSuccessAfterInResponderHookInvoke(done, 'DELETE');
+        it('should correctly respond to a DELETE request with a post-responder hook after an in-responder when there is a valid status code returned by the former', function (done) {
+            validatePostResponderHookSuccessAfterResponderHookInvoke(done, 'DELETE');
         });
 
-        it('should correcly invoke a GET pre-responder hook but not an in-responder when there is an invalid status code returned by the latter', function (done) {
-            validatePreResponderHookFailureBeforeInResponderHookInvoke(done, 'GET');
+        it('should correctly invoke a GET pre-responder hook but not an in-responder when there is an invalid status code returned by the latter', function (done) {
+            validatePreResponderHookFailureBeforeResponderHookInvoke(done, 'GET');
         });
 
-        it('should correcly invoke a PUT pre-responder hook but not an in-responder when there is an invalid status code returned by the latter', function (done) {
-            validatePreResponderHookFailureBeforeInResponderHookInvoke(done, 'PUT');
+        it('should correctly invoke a PUT pre-responder hook but not an in-responder when there is an invalid status code returned by the latter', function (done) {
+            validatePreResponderHookFailureBeforeResponderHookInvoke(done, 'PUT');
         });
 
-        it('should correcly invoke a POST pre-responder hook but not an in-responder when there is an invalid status code returned by the latter', function (done) {
-            validatePreResponderHookFailureBeforeInResponderHookInvoke(done, 'POST');
+        it('should correctly invoke a POST pre-responder hook but not an in-responder when there is an invalid status code returned by the latter', function (done) {
+            validatePreResponderHookFailureBeforeResponderHookInvoke(done, 'POST');
         });
 
-        it('should correcly invoke a DELETE pre-responder hook but not an in-responder when there is an invalid status code returned by the latter', function (done) {
-            validatePreResponderHookFailureBeforeInResponderHookInvoke(done, 'DELETE');
+        it('should correctly invoke a DELETE pre-responder hook but not an in-responder when there is an invalid status code returned by the latter', function (done) {
+            validatePreResponderHookFailureBeforeResponderHookInvoke(done, 'DELETE');
         });
 
-        it('should correcly respond to a GET request with a post-responder hook after an in-responder when there is an invalid status code returned by the former', function (done) {
-            validatePostResponderHookFailureAfterInResponderHookInvoke(done, 'GET');
+        it('should correctly respond to a GET request with a post-responder hook after an in-responder when there is an invalid status code returned by the former', function (done) {
+            validatePostResponderHookFailureAfterResponderHookInvoke(done, 'GET');
         });
 
-        it('should correcly respond to a PUT request with a post-responder hook after an in-responder when there is an invalid status code returned by the former', function (done) {
-            validatePostResponderHookFailureAfterInResponderHookInvoke(done, 'PUT');
+        it('should correctly respond to a PUT request with a post-responder hook after an in-responder when there is an invalid status code returned by the former', function (done) {
+            validatePostResponderHookFailureAfterResponderHookInvoke(done, 'PUT');
         });
 
-        it('should correcly respond to a POST request with a post-responder hook after an in-responder when there is an invalid status code returned by the former', function (done) {
-            validatePostResponderHookFailureAfterInResponderHookInvoke(done, 'POST');
+        it('should correctly respond to a POST request with a post-responder hook after an in-responder when there is an invalid status code returned by the former', function (done) {
+            validatePostResponderHookFailureAfterResponderHookInvoke(done, 'POST');
         });
 
-        it('should correcly respond to a DELETE request with a post-responder hook after an in-responder when there is an invalid status code returned by the former', function (done) {
-            validatePostResponderHookFailureAfterInResponderHookInvoke(done, 'DELETE');
+        it('should correctly respond to a DELETE request with a post-responder hook after an in-responder when there is an invalid status code returned by the former', function (done) {
+            validatePostResponderHookFailureAfterResponderHookInvoke(done, 'DELETE');
         });
 
-        it('should correcly invoke a GET pre-responder hook prior to an in-responder when there is a continue status code returned by the former', function (done) {
-            validatePreResponderHookContinueBeforeInResponderHookInvoke(done, 'GET');
+        it('should correctly invoke a GET pre-responder hook prior to an in-responder when there is a continue status code returned by the former', function (done) {
+            validatePreResponderHookContinueBeforeResponderHookInvoke(done, 'GET');
         });
 
-        it('should correcly invoke a PUT pre-responder hook prior to an in-responder when there is a continue status code returned by the former', function (done) {
-            validatePreResponderHookContinueBeforeInResponderHookInvoke(done, 'PUT');
+        it('should correctly invoke a PUT pre-responder hook prior to an in-responder when there is a continue status code returned by the former', function (done) {
+            validatePreResponderHookContinueBeforeResponderHookInvoke(done, 'PUT');
         });
 
-        it('should correcly invoke a POST pre-responder hook prior to an in-responder when there is a continue status code returned by the former', function (done) {
-            validatePreResponderHookContinueBeforeInResponderHookInvoke(done, 'POST');
+        it('should correctly invoke a POST pre-responder hook prior to an in-responder when there is a continue status code returned by the former', function (done) {
+            validatePreResponderHookContinueBeforeResponderHookInvoke(done, 'POST');
         });
 
-        it('should correcly invoke a DELETE pre-responder hook prior to an in-responder when there is a continue status code returned by the former', function (done) {
-            validatePreResponderHookContinueBeforeInResponderHookInvoke(done, 'DELETE');
+        it('should correctly invoke a DELETE pre-responder hook prior to an in-responder when there is a continue status code returned by the former', function (done) {
+            validatePreResponderHookContinueBeforeResponderHookInvoke(done, 'DELETE');
         });
 
-        it('should correcly respond to a GET request with a post-responder hook after an in-responder when there is a continue status code returned by the former', function (done) {
-            validatePostResponderHookContinueAfterInResponderHookInvoke(done, 'GET');
+        it('should correctly respond to a GET request with a post-responder hook after an in-responder when there is a continue status code returned by the former', function (done) {
+            validatePostResponderHookContinueAfterResponderHookInvoke(done, 'GET');
         });
 
-        it('should correcly respond to a PUT request with a post-responder hook after an in-responder when there is a continue status code returned by the former', function (done) {
-            validatePostResponderHookContinueAfterInResponderHookInvoke(done, 'PUT');
+        it('should correctly respond to a PUT request with a post-responder hook after an in-responder when there is a continue status code returned by the former', function (done) {
+            validatePostResponderHookContinueAfterResponderHookInvoke(done, 'PUT');
         });
 
-        it('should correcly respond to a POST request with a post-responder hook after an in-responder when there is a continue status code returned by the former', function (done) {
-            validatePostResponderHookContinueAfterInResponderHookInvoke(done, 'POST');
+        it('should correctly respond to a POST request with a post-responder hook after an in-responder when there is a continue status code returned by the former', function (done) {
+            validatePostResponderHookContinueAfterResponderHookInvoke(done, 'POST');
         });
 
-        it('should correcly respond to a DELETE request with a post-responder hook after an in-responder when there is a continue status code returned by the former', function (done) {
-            validatePostResponderHookContinueAfterInResponderHookInvoke(done, 'DELETE');
+        it('should correctly respond to a DELETE request with a post-responder hook after an in-responder when there is a continue status code returned by the former', function (done) {
+            validatePostResponderHookContinueAfterResponderHookInvoke(done, 'DELETE');
         });
 
-        it('should correcly respond to a GET request with multiple in-responder hooks returning a successful status code', function (done) {
-            validateMultipleInResponderHooksInvokeWithSuccessResponse(done, 'GET');
+        it('should correctly respond to a GET request with multiple in-responder hooks returning a successful status code', function (done) {
+            validateMultipleResponderHooksInvokeWithSuccessResponse(done, 'GET');
         });
 
-        it('should correcly respond to a PUT request with multiple in-responder hooks returning a successful status code', function (done) {
-            validateMultipleInResponderHooksInvokeWithSuccessResponse(done, 'PUT');
+        it('should correctly respond to a PUT request with multiple in-responder hooks returning a successful status code', function (done) {
+            validateMultipleResponderHooksInvokeWithSuccessResponse(done, 'PUT');
         });
 
-        it('should correcly respond to a POST request with multiple in-responder hooks returning a successful status code', function (done) {
-            validateMultipleInResponderHooksInvokeWithSuccessResponse(done, 'POST');
+        it('should correctly respond to a POST request with multiple in-responder hooks returning a successful status code', function (done) {
+            validateMultipleResponderHooksInvokeWithSuccessResponse(done, 'POST');
         });
 
-        it('should correcly respond to a DELETE request with multiple in-responder hooks returning a successful status code', function (done) {
-            validateMultipleInResponderHooksInvokeWithSuccessResponse(done, 'DELETE');
+        it('should correctly respond to a DELETE request with multiple in-responder hooks returning a successful status code', function (done) {
+            validateMultipleResponderHooksInvokeWithSuccessResponse(done, 'DELETE');
         });
     });
 });

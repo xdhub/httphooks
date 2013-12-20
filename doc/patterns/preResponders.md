@@ -3,7 +3,7 @@
 
 ## Request validation using a pre-responder hook
 
-This example validates the HTTP request using a pre-resonder hook. If the pre-responder hook determines that the request is valid, it returns a success status code (2xx); otherwise, if invalid, it returns the error response. If an invalid response is returned the subsequent hooks in the execution chain are skipped and not executed.
+This example validates the HTTP request using a pre-responder hook. If the pre-responder hook determines that the request is valid, it returns a success status code (2xx); otherwise, if invalid, it returns the error response. If an invalid response is returned the subsequent hooks in the execution chain are skipped and not executed.
 
 ```js
 var http = require('http');
@@ -15,22 +15,24 @@ httpHooks.getPreResponder(urlPattern, function (hookContext, done) {
     // key named 'name' and a corresponding  string value. e.g. /?name=Elmar
     if (!hookContext.request.query.name
         || typeof hookContext.request.query.name !== 'string') {
-        hookContext.response.statusCode = 400;
-        hookContext.response.headers = { 'Content-Type': 'text/html' };
-        hookContext.response.content = 'Bad Request';
+        hookContext.setResponse(
+            400,
+            { 'Content-Type': 'text/html' },
+            'Bad Request');
     } else {
-        hookContext.response.statusCode = 200;
+        hookContext.setResponse(200);
     }
 
     done();
 });
 
-httpHooks.getInResponder(urlPattern, function (hookContext, done) {
+httpHooks.getResponder(urlPattern, function (hookContext, done) {
     var content = 'Welcome to \'' + hookContext.request.url.path + '\'...'
         + '\r\nHello ' + hookContext.request.query.name + '! :)';
-    hookContext.response.statusCode = 200;
-    hookContext.response.headers = { 'Content-Type': 'text/html' };
-    hookContext.response.content = content;
+    hookContext.setResponse(
+        200,
+        { 'Content-Type': 'text/html' },
+        content);
     done();
 });
 
@@ -43,7 +45,7 @@ server.listen(8080);
 
 ## Request augmentation/replacement using a pre-responder hook
 
-This example shows how to augment or replace an incomming request through a pre-responder hook. If the incomming request is valid, we proceed to augment the content or body of the incomming request with a user JSON object as a string. Once the following hook is invoked we can see that the request is fully updated with the previous request content.
+This example shows how to augment or replace an incoming request through a pre-responder hook. If the incoming request is valid, we proceed to augment the content or body of the incoming request with a user JSON object as a string. Once the following hook is invoked we can see that the request is fully updated with the previous request content.
 
 ```js
 var http = require('http');
@@ -53,11 +55,12 @@ var urlPattern = '/*';
 httpHooks.getPreResponder(urlPattern, function (hookContext, done) {
     if (!hookContext.request.query.name
         || typeof hookContext.request.query.name !== 'string') {
-        hookContext.response.statusCode = 400;
-        hookContext.response.headers = { 'Content-Type': 'text/html' };
-        hookContext.response.content = 'Bad Request';
+        hookContext.setResponse(
+            400,
+            { 'Content-Type': 'text/html' },
+            'Bad Request');
     } else {
-        // Augment the content of the incomming request with a user object which
+        // Augment the content of the incoming request with a user object which
         // is converted to a JSON string
         var content = JSON.stringify({
             name: hookContext.request.query.name,
@@ -74,9 +77,10 @@ httpHooks.getInResponder(urlPattern, function (hookContext, done) {
     var user = JSON.parse(hookContext.request.content);
     var content = 'Welcome to \'' + hookContext.request.url.path + '\'...'
         + '\r\nHello ' + user.normalizedName + '! :)';
-    hookContext.response.statusCode = 200;
-    hookContext.response.headers = { 'Content-Type': 'text/html' };
-    hookContext.response.content = content;
+    hookContext.setResponse(
+        200,
+        { 'Content-Type': 'text/html' },
+        content);
     done();
 });
 
