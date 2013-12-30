@@ -14,7 +14,7 @@ var defaultOptions = {
     files: {}
 };
 
-var IncommingMessage = function (options) {
+var IncomingMessage = function (options) {
     options = options || defaultOptions;
     for (var propertyName in options) {
         this[propertyName] = options[propertyName];
@@ -27,5 +27,5 @@ var IncommingMessage = function (options) {
     }
 };
 
-util.inherits(IncommingMessage, EventEmitter);
-module.exports = IncommingMessage;
+util.inherits(IncomingMessage, EventEmitter);
+module.exports = IncomingMessage;

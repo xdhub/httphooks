@@ -293,7 +293,7 @@ function validateHookInvoke(done, method, type) {
     };
     httpHooks.addHook(hook);
     var httpContext = {
-        request: new MockHttp.IncommingMessage({
+        request: new MockHttp.IncomingMessage({
             method: method,
             url: url,
             headers: headers
@@ -381,7 +381,7 @@ function validatePreResponderHookSuccessBeforeResponderHookInvoke(done, method) 
         }
     });
     var httpContext = {
-        request: new MockHttp.IncommingMessage({
+        request: new MockHttp.IncomingMessage({
             method: method,
             url: url,
             headers: requestHeaders
@@ -477,7 +477,7 @@ function validatePostResponderHookSuccessAfterResponderHookInvoke(done, method) 
         }
     });
     var httpContext = {
-        request: new MockHttp.IncommingMessage({
+        request: new MockHttp.IncomingMessage({
             method: method,
             url: url,
             headers: requestHeaders
@@ -553,7 +553,7 @@ function validatePreResponderHookFailureBeforeResponderHookInvoke(done, method) 
         }
     });
     var httpContext = {
-        request: new MockHttp.IncommingMessage({
+        request: new MockHttp.IncomingMessage({
             method: method,
             url: url,
             headers: requestHeaders
@@ -655,7 +655,7 @@ function validatePostResponderHookFailureAfterResponderHookInvoke(done, method) 
         }
     });
     var httpContext = {
-        request: new MockHttp.IncommingMessage({
+        request: new MockHttp.IncomingMessage({
             method: method,
             url: url,
             headers: requestHeaders
@@ -756,7 +756,7 @@ function validatePreResponderHookContinueBeforeResponderHookInvoke(done, method)
         }
     });
     var httpContext = {
-        request: new MockHttp.IncommingMessage({
+        request: new MockHttp.IncomingMessage({
             method: method,
             url: url,
             headers: requestHeaders
@@ -858,7 +858,7 @@ function validatePostResponderHookContinueAfterResponderHookInvoke(done, method)
         }
     });
     var httpContext = {
-        request: new MockHttp.IncommingMessage({
+        request: new MockHttp.IncomingMessage({
             method: method,
             url: url,
             headers: requestHeaders
@@ -961,7 +961,7 @@ function validateMultipleResponderHooksInvokeWithSuccessResponse(done, method) {
     };
     httpHooks.addHook(hook2);
     var httpContext = {
-        request: new MockHttp.IncommingMessage({
+        request: new MockHttp.IncomingMessage({
             method: method,
             url: url,
             headers: headers
@@ -4984,7 +4984,7 @@ describe('HttpHooks', function () {
         it('should not throw any errors whenever there is no matching hook', function (done) {
             var httpHooks = new HttpHooks();
             var httpContext = {
-                request: new MockHttp.IncommingMessage(),
+                request: new MockHttp.IncomingMessage(),
                 response: new MockHttp.ServerResponse()
             };
             httpContext.response.on('end', function () {
@@ -5007,7 +5007,7 @@ describe('HttpHooks', function () {
                 httpContext.response.end();
             });
             var httpContext = {
-                request: new MockHttp.IncommingMessage(),
+                request: new MockHttp.IncomingMessage(),
                 response: new MockHttp.ServerResponse()
             };
             httpContext.response.on('end', function () {
