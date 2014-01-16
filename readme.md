@@ -23,7 +23,7 @@ var httpHooks = new (require('httphooks'))();
 httpHooks.get('/*', function (hookContext, done) {
     var request = hookContext.request;
     var response = hookContext.response;
-    response.setResponse(
+    hookContext.setResponse(
         200,
         { 'Content-Type': 'text/html' },
         'Welcome to \'' + request.url.path + '\'... Hello World! :)');
@@ -44,7 +44,7 @@ server.listen(8080);
 * Leverages [route-pattern](https://github.com/bjoerge/route-pattern) to define the resource locations to hook on.
 * Well defined execution and inter-communication model for logical units.
 * Clean separation between listener and responder for compute or I/O logical units.
-* Inline or file path definition of logical units.
+* Inline, file (e.g. file:) or remote (e.g. http: or https:) hook definition of logical execution units.
 * Handling of non-matching requests to hooks.
 * Supports detection and collapsing of multiple responses into a single multipart response.
 * Large amount of documentation including design, common use patterns, code examples and API references.
@@ -56,9 +56,8 @@ server.listen(8080);
 * [API reference](./doc/api.md)
 
 ## TODO
+* Add remote hook tests.
 * Update hooks in-memory collection to use [collections](https://github.com/montagejs/collections) instead of [dict](https://github.com/domenic/dict) while taking into account optimizing for search on paths.
-* Update CallbackInfo protocols to support HTTP and HTTPS.
-* Add remote hook responder invocation and request/response proxying for listeners for subscribers.
 * Add runtime hook management through HTTP /httphooks topic.
 * Add support for other HTTP verbs such as: HEAD and PATCH.
 * Add support for automated parsing based on Content-Type.

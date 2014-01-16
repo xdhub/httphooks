@@ -1,5 +1,5 @@
-HttpHooks API Reference
-=======================
+HttpHooks Reference
+===================
 **Author:** Elmar Langholz
 
 HttpHooks(\[hooks\])
