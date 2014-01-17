@@ -2,14 +2,14 @@ HttpHooks Reference
 ===================
 **Author:** Elmar Langholz
 
-HttpHooks(\[hooks\])
---------------------
+HttpHooks(\[options\])
+----------------------
 Initializes a new instance of the `HttpHooks`.
 
 
 **Parameters**
 
-**[hooks]**:  *Hook[]*,  The hooks to initialize the instance with.
+**[options]**:  *HttpHooksOptions*,  The `HttpHooks` options to initialize the instance with.
 
 class HttpContext
 -----------------
@@ -18,6 +18,12 @@ class HttpContext
 **request**:  *object*,  The HTTP request object.
 
 **response**:  *object*,  The HTTP response object
+
+class HttpHooksOptions
+----------------------
+**Members**
+
+**hooks**:  *Hook[]*,  The hooks to initialize the instance with.
 
 class HttpHooks
 ---------------

@@ -1057,7 +1057,7 @@ describe('HttpHooks', function () {
             invalidHooksTypes.forEach(function (hooks) {
                 var error = false;
                 try {
-                    new HttpHooks(hooks);
+                    new HttpHooks({hooks: hooks});
                 } catch (e) {
                     error = true;
                 }
@@ -1070,7 +1070,7 @@ describe('HttpHooks', function () {
             invalidHookValues.forEach(function (hook) {
                 var error = false;
                 try {
-                    new HttpHooks([hook]);
+                    new HttpHooks({hooks: [hook]});
                 } catch (e) {
                     error = true;
                 }
@@ -1084,7 +1084,7 @@ describe('HttpHooks', function () {
                 var error = false;
                 var httpHooks = null;
                 try {
-                    httpHooks = new HttpHooks([hook]);
+                    httpHooks = new HttpHooks({hooks: [hook]});
                 } catch (e) {
                     throw e;
                     error = true;
