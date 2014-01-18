@@ -5022,7 +5022,7 @@ describe('HttpHooks', function () {
             httpContext.request.emit('end');
         });
 
-        it('should find and invoke the defined hook for a GET pre-listener', function (done) {
+        it('should find and invoke the defined hook for a GET request-listener', function (done) {
             validateHookInvoke(done, 'GET', 'request-listener');
         });
 
@@ -5038,7 +5038,7 @@ describe('HttpHooks', function () {
             validateHookInvoke(done, 'GET', 'response-listener');
         });
 
-        it('should find and invoke the defined hook for a PUT pre-listener', function (done) {
+        it('should find and invoke the defined hook for a PUT request-listener', function (done) {
             validateHookInvoke(done, 'PUT', 'request-listener');
         });
 
@@ -5085,6 +5085,7 @@ describe('HttpHooks', function () {
         it('should find and invoke the defined hook for a DELETE response-listener', function (done) {
             validateHookInvoke(done, 'DELETE', 'response-listener');
         });
+
         it('should find and invoke the defined hook for a GET pre-responder', function (done) {
             validateHookInvoke(done, 'GET', 'pre-responder');
         });
