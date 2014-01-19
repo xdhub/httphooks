@@ -56,8 +56,8 @@ server.listen(8080);
 
 ## TODO
 * Update hooks in-memory collection to use [collections](https://github.com/montagejs/collections) instead of [dict](https://github.com/domenic/dict) while taking into account optimizing for search on paths.
-* Add runtime hook management through HTTP /httphooks topic.
+* Add runtime hook management through HTTP ~/httphooks topic.
 * Add support for other HTTP verbs such as: HEAD and PATCH.
 * Add support for automated parsing based on Content-Type.
 * Add [sandbox](http://gf3.github.io/sandbox/) for function callbacks.
-* Replace custom validation with [schema-inspector](http://atinux.github.io/schema-inspector/)
+* Replace custom validation with [schema-inspector](http://atinux.github.io/schema-inspector/).
