@@ -38,7 +38,6 @@ server.listen(8080);
 ```
 
 ## Features
-
 * Integrates and standardizes on default primitives defined by the node.js http server.
 * By default, supports the four main HTTP verbs: GET, PUT, POST and DELETE.
 * Leverages [route-pattern](https://github.com/bjoerge/route-pattern) to define the resource locations to hook on.
@@ -56,9 +55,12 @@ server.listen(8080);
 * [API reference](./doc/api.md)
 
 ## TODO
-* Add remote hook tests.
 * Update hooks in-memory collection to use [collections](https://github.com/montagejs/collections) instead of [dict](https://github.com/domenic/dict) while taking into account optimizing for search on paths.
-* Add runtime hook management through HTTP /httphooks topic.
-* Add support for other HTTP verbs such as: HEAD and PATCH.
+* Add defaultResponderCallback options to constructor to allow request to always be serviced (e.g. hit storage on non-existing hook).
+* Add runtime hook management through HTTP ~/httphooks topic.
+* Implement JWT [JSON Web Token](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-14) as the authentication mechanism.
+* Implement Policy using [edge.js](https://github.com/tjanczuk/edge) as the communication bridge.
+* Add [sandbox.js](http://gf3.github.io/sandbox/) for function callbacks.
+* Replace custom validation with [schema-inspector](http://atinux.github.io/schema-inspector/).
 * Add support for automated parsing based on Content-Type.
-* Add [sandbox](http://gf3.github.io/sandbox/) for function callbacks.
+* Add support for other HTTP verbs such as: HEAD and PATCH.
