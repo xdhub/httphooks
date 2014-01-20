@@ -24,6 +24,13 @@ httpHooks.getPostResponder(urlPattern, function (hookContext, done) {
             || !myObject.name
             || typeof myObject.name !== 'string') {
             hookContext.setResponse(500, { 'Content-Type': 'text/html' }, 'Internal Server Error');
+        } else {
+            myObject.dateTime = new Date();
+            var content = JSON.stringify(myObject);
+            hookContext.replaceResponse(
+                200,
+                { 'Content-Type': 'application/json' },
+                content);
         }
     }
 
