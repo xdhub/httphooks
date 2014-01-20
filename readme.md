@@ -58,8 +58,9 @@ server.listen(8080);
 * Update hooks in-memory collection to use [collections](https://github.com/montagejs/collections) instead of [dict](https://github.com/domenic/dict) while taking into account optimizing for search on paths.
 * Add defaultResponderCallback options to constructor to allow request to always be serviced (e.g. hit storage on non-existing hook).
 * Add runtime hook management through HTTP ~/httphooks topic.
-* Implement JWT [JSON Web Token](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-14) as the authentication mechanism.
-* Implement Policy using [edge.js](https://github.com/tjanczuk/edge) as the communication bridge.
+* Design and implement push mechanism for mobile devices using [Azure notification hub service](http://www.windowsazure.com/en-us/documentation/articles/notification-hubs-nodejs-how-to-use-notification-hubs/).
+* Design and implement JWT [JSON Web Token](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-14) as the authentication mechanism.
+* Design and implement Policy using [edge.js](https://github.com/tjanczuk/edge) as the communication bridge.
 * Add [sandbox.js](http://gf3.github.io/sandbox/) for function callbacks.
 * Replace custom validation with [schema-inspector](http://atinux.github.io/schema-inspector/).
 * Add support for automated parsing based on Content-Type.
