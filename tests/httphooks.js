@@ -1094,6 +1094,38 @@ describe('HttpHooks', function () {
                     hook.type.toLowerCase());
             });
         });
+
+        it('should not throw an error when a valid  no hook match handler  is provided', function () {
+            validNoMatchCallbackValues.forEach(function (callback) {
+                new HttpHooks({noMatchHandler: callback});
+            });
+        });
+
+        it('should throw an error when an invalid no hook match handler type is provided', function () {
+            nonFunctionTypes.forEach(function (callback) {
+                var error = false;
+                try {
+                    new HttpHooks({noMatchHandler: callback});
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
+            });
+        });
+
+        it('should throw an error when an invalid no hook match handler is provided', function () {
+            invalidNoMatchCallbackValues.forEach(function (callback) {
+                var error = false;
+                try {
+                    new HttpHooks({noMatchHandler: callback});
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
+            });
+        });
     });
 
     describe('#addHook(value)', function () {

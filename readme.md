@@ -55,7 +55,7 @@ server.listen(8080);
 * [API reference](./doc/api.md)
 
 ## TODO
-* Add defaultResponderCallback options to constructor to allow request to always be serviced (e.g. hit storage on non-existing hook).
+* Add defaultResponder options to constructor to allow request to always be serviced (e.g. hit storage on non-existing hook).
 * Add runtime hook management through HTTP ~/httphooks topic.
 * Design and implement push mechanism for mobile devices using [Azure notification hub service](http://www.windowsazure.com/en-us/documentation/articles/notification-hubs-nodejs-how-to-use-notification-hubs/).
 * Design and implement JWT [JSON Web Token](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-14) as the authentication mechanism.
