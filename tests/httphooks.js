@@ -61,6 +61,41 @@ var invalidNoMatchCallbackValues = [
     },
     {
         func: 'noMatchFn'
+    },
+    {
+        uri: 'file:///../tests/mockCallbackFile.js',
+        func: 'noMatchFn'
+    }
+];
+var invalidDefaultResponderCallbackValues = [
+    {},
+    {
+        uri: null
+    },
+    {
+        func: null
+    },
+    {
+        uri: null,
+        func: null
+    },
+    {
+        uri: 'file:///../tests/mockCallbackFile.js',
+        func: null
+    },
+    {
+        uri: null,
+        func: 'noMatchFn'
+    },
+    {
+        uri: 'file:///../tests/mockCallbackFile.js'
+    },
+    {
+        func: 'noMatchFn'
+    },
+    {
+        uri: 'file:///../tests/mockCallbackFile.js',
+        func: 'noMatchFn'
     }
 ];
 var validHookCallbackValues = [
@@ -72,6 +107,9 @@ var validHookCallbackValues = [
 ];
 var validNoMatchCallbackValues = [
     function (httpContext) { }
+];
+var validDefaultResponderCallbackValues = [
+    function (hookContext, done) { done(); }
 ];
 var invalidTypeValues = [
     'l', 'li', 'lis', 'list', 'liste',
@@ -1095,7 +1133,7 @@ describe('HttpHooks', function () {
             });
         });
 
-        it('should not throw an error when a valid  no hook match handler  is provided', function () {
+        it('should not throw an error when a valid no hook match handler is provided', function () {
             validNoMatchCallbackValues.forEach(function (callback) {
                 new HttpHooks({noMatchHandler: callback});
             });
@@ -1119,6 +1157,38 @@ describe('HttpHooks', function () {
                 var error = false;
                 try {
                     new HttpHooks({noMatchHandler: callback});
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + callback ? JSON.stringify(callback) : typeof callback);
+            });
+        });
+
+        it('should not throw an error when a valid default responder is provided', function () {
+            validDefaultResponderCallbackValues.forEach(function (callback) {
+                new HttpHooks({defaultResponder: callback});
+            });
+        });
+
+        it('should throw an error when an invalid default responder type is provided', function () {
+            nonFunctionTypes.forEach(function (callback) {
+                var error = false;
+                try {
+                    new HttpHooks({defaultResponder: callback});
+                } catch (e) {
+                    error = true;
+                }
+
+                error.should.equal(true, 'Expected throw for item of type: ' + typeof callback);
+            });
+        });
+
+        it('should throw an error when an invalid no hook match handler is provided', function () {
+            invalidDefaultResponderCallbackValues.forEach(function (callback) {
+                var error = false;
+                try {
+                    new HttpHooks({defaultResponder: callback});
                 } catch (e) {
                     error = true;
                 }
@@ -2977,7 +3047,6 @@ describe('HttpHooks', function () {
         });
     });
 
-
     describe('#getRequestListener(value1, value2)', function () {
         it('should not throw an error when the first two arguments are passed and are valid', function () {
             validHookCallbackValues.forEach(function (callback) {
@@ -3973,7 +4042,6 @@ describe('HttpHooks', function () {
             });
         });
     });
-
 
     describe('#getResponseListener(value1, value2)', function () {
         it('should not throw an error when the first two arguments are passed and are valid', function () {
@@ -5027,7 +5095,7 @@ describe('HttpHooks', function () {
             httpContext.request.emit('end');
         });
 
-        it('should not throw any errors whenever there is no matching hook and a no match listener', function (done) {
+        it('should not throw any errors whenever there is no matching hook and a no match handler (handler is explicitly set on the instance)', function (done) {
             var httpHooks = new HttpHooks();
             httpHooks.noMatchHandler(function (httpContext) {
                 httpContext.response.writeHead(500, { 'Content-Type': 'text/html' });
@@ -5044,6 +5112,96 @@ describe('HttpHooks', function () {
                 contentType.should.be.a.String;
                 should.strictEqual('text/html', contentType);
                 httpContext.response._data.join('').should.equal('Internal Server Error Brah!');
+                done();
+            });
+            httpHooks.dispatch(httpContext);
+            httpContext.request.emit('end');
+        });
+
+        it('should not throw any errors whenever there is no matching hook and a no match handler (handler defined as constructor property)', function (done) {
+            var httpHooks = new HttpHooks({noMatchHandler: function (httpContext) {
+                httpContext.response.writeHead(500, { 'Content-Type': 'text/html' });
+                httpContext.response.write('Internal Server Error Brah!');
+                httpContext.response.end();
+            }});
+            var httpContext = {
+                request: new MockHttp.IncomingMessage(),
+                response: new MockHttp.ServerResponse()
+            };
+            httpContext.response.on('end', function () {
+                httpContext.response.statusCode.should.equal(500);
+                var contentType = httpContext.response.getHeader('Content-Type');
+                contentType.should.be.a.String;
+                should.strictEqual('text/html', contentType);
+                httpContext.response._data.join('').should.equal('Internal Server Error Brah!');
+                done();
+            });
+            httpHooks.dispatch(httpContext);
+            httpContext.request.emit('end');
+        });
+
+
+        it('should use the default responder if no hook is matched and not trigger the no match handler', function (done) {
+            var httpHooks = new HttpHooks({
+                noMatchHandler: function (httpContext) {
+                    httpContext.response.writeHead(500, { 'Content-Type': 'text/html' });
+                    httpContext.response.write('Internal Server Error Brah!');
+                    httpContext.response.end();
+                },
+                defaultResponder: function (hookContext, complete) {
+                    hookContext.setResponse(
+                        200,
+                        { 'Content-Type': 'text/html' },
+                        'defaultResponder Hello World! :)');
+                    complete();
+                }});
+            var httpContext = {
+                request: new MockHttp.IncomingMessage(),
+                response: new MockHttp.ServerResponse()
+            };
+            httpContext.response.on('end', function () {
+                httpContext.response.statusCode.should.equal(200);
+                var contentType = httpContext.response.getHeader('Content-Type');
+                contentType.should.be.a.String;
+                should.strictEqual('text/html', contentType);
+                httpContext.response._data.join('').should.equal('defaultResponder Hello World! :)');
+                done();
+            });
+            httpHooks.dispatch(httpContext);
+            httpContext.request.emit('end');
+        });
+
+        it('should trigger the set responder if a hook is matched and not trigger the no match handler or the default responder', function (done) {
+            var httpHooks = new HttpHooks({
+                noMatchHandler: function (httpContext) {
+                    httpContext.response.writeHead(500, { 'Content-Type': 'text/html' });
+                    httpContext.response.write('Internal Server Error Brah!');
+                    httpContext.response.end();
+                },
+                defaultResponder: function (hookContext, complete) {
+                    hookContext.setResponse(
+                        200,
+                        { 'Content-Type': 'text/html' },
+                        'defaultResponder Hello World! :)');
+                    complete();
+                }});
+            httpHooks.getResponder('/*', function (hookContext, complete) {
+                hookContext.setResponse(
+                    200,
+                    { 'Content-Type': 'text/html' },
+                    'Hello World! :)');
+                complete();
+            });
+            var httpContext = {
+                request: new MockHttp.IncomingMessage(),
+                response: new MockHttp.ServerResponse()
+            };
+            httpContext.response.on('end', function () {
+                httpContext.response.statusCode.should.equal(200);
+                var contentType = httpContext.response.getHeader('Content-Type');
+                contentType.should.be.a.String;
+                should.strictEqual('text/html', contentType);
+                httpContext.response._data.join('').should.equal('Hello World! :)');
                 done();
             });
             httpHooks.dispatch(httpContext);
