@@ -52,7 +52,7 @@ describe('HttpHooks', function () {
         function validateRemoteHookInvoke(done, method, type) {
             var foundError = false;
             var responderContent = method + ' on ' + type;
-            httpHooks1.onNoMatch(function (httpContext) {
+            httpHooks1.noMatchHandler(function (httpContext) {
                 done(new Error('Expected hook to be found and invoked'));
             });
             var hook1 = {
@@ -103,7 +103,7 @@ describe('HttpHooks', function () {
                     complete();
                 }
             };
-            httpHooks2.onNoMatch(function (httpContext) {
+            httpHooks2.noMatchHandler(function (httpContext) {
                 if (!foundError) {
                     done(new Error('Expected hook to be found and invoked'));
                 }

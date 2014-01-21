@@ -23,7 +23,11 @@ class HttpHooksOptions
 ----------------------
 **Members**
 
-**hooks**:  *Hook[]*,  The hooks to initialize the instance with.
+**[hooks]**:  *Hook[]*,  The hooks to initialize the instance with.
+
+**[noMatchHandler]**:  *function*,  The `httpContext` handler for when there is no matching hook or default responder. By default, a 404 response is issued if none is provided.
+
+**[defaultResponder]**:  *function*,  The responder to use when there are no matching responder hooks. By default, null meaning nothing will be executed and instead causing the noMatchHandler to be called.
 
 class HttpHooks
 ---------------
@@ -498,14 +502,14 @@ Defines an HTTP DELETE post-responder hook whose callback `cb` is invoked upon a
 
 **cb**:  *function | HookCallback*,  The callback to invoke whenever there is a matching request.
 
-HttpHooks.onNoMatch(callback)
------------------------------
-The `callback` function to invoke whenever there is no hooks that matches the request.
+HttpHooks.noMatchHandler(cb)
+----------------------------
+Sets the function to invoke whenever there are no hooks that match the request.
 
 
 **Parameters**
 
-**callback**:  *function*,  The callback to invoke when there is no matching hook.
+**cb**:  *function*,  The callback to invoke when there is no matching hook.
 
 HttpHooks.dispatch(httpContext)
 -------------------------------
