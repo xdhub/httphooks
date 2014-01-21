@@ -71,11 +71,7 @@ var validHookCallbackValues = [
     }
 ];
 var validNoMatchCallbackValues = [
-    function (httpContext, done) { done(); },
-    {
-        uri: 'file:///../tests/mockCallbackFile.js',
-        func: 'noMatchFn'
-    }
+    function (httpContext) { }
 ];
 var invalidTypeValues = [
     'l', 'li', 'lis', 'list', 'liste',
@@ -255,7 +251,7 @@ function validateHookInvoke(done, method, type) {
     };
     var data = dataBuffer.toString();
     var httpHooks = new HttpHooks();
-    httpHooks.onNoMatch(function (httpContext) {
+    httpHooks.noMatchHandler(function (httpContext) {
         if (!foundError) {
             done(new Error('Expected hook to be found and invoked'));
         }
@@ -321,7 +317,7 @@ function validatePreResponderHookSuccessBeforeResponderHookInvoke(done, method) 
     var requestData = requestDataBuffer.toString();
     var responseDataBuffer = new Buffer('Success');
     var httpHooks = new HttpHooks();
-    httpHooks.onNoMatch(function (httpContext) {
+    httpHooks.noMatchHandler(function (httpContext) {
         done(new Error('Expected hook to be found and invoked'));
     });
     httpHooks.addHook({
@@ -416,7 +412,7 @@ function validatePostResponderHookSuccessAfterResponderHookInvoke(done, method) 
     var requestData = requestDataBuffer.toString();
     var responseDataBuffer = new Buffer('Success');
     var httpHooks = new HttpHooks();
-    httpHooks.onNoMatch(function (httpContext) {
+    httpHooks.noMatchHandler(function (httpContext) {
         done(new Error('Expected hook to be found and invoked'));
     });
     httpHooks.addHook({
@@ -513,7 +509,7 @@ function validatePreResponderHookFailureBeforeResponderHookInvoke(done, method) 
     var responseDataBuffer = new Buffer('Failure');
     var responseData = responseDataBuffer.toString();
     var httpHooks = new HttpHooks();
-    httpHooks.onNoMatch(function (httpContext) {
+    httpHooks.noMatchHandler(function (httpContext) {
         done(new Error('Expected hook to be found and invoked'));
     });
     httpHooks.addHook({
@@ -591,7 +587,7 @@ function validatePostResponderHookFailureAfterResponderHookInvoke(done, method) 
     var responseDataBuffer = new Buffer('Failure');
     var responseData = responseDataBuffer.toString();
     var httpHooks = new HttpHooks();
-    httpHooks.onNoMatch(function (httpContext) {
+    httpHooks.noMatchHandler(function (httpContext) {
         foundError = true;
         done(new Error('Expected hook to be found and invoked'));
     });
@@ -693,7 +689,7 @@ function validatePreResponderHookContinueBeforeResponderHookInvoke(done, method)
     var continueDataBuffer = new Buffer('My Continue Data Buffer');
     var continueData = continueDataBuffer.toString();
     var httpHooks = new HttpHooks();
-    httpHooks.onNoMatch(function (httpContext) {
+    httpHooks.noMatchHandler(function (httpContext) {
         done(new Error('Expected hook to be found and invoked'));
     });
     httpHooks.addHook({
@@ -794,7 +790,7 @@ function validatePostResponderHookContinueAfterResponderHookInvoke(done, method)
     var continueDataBuffer = new Buffer('My Continue Data Buffer');
     var continueData = continueDataBuffer.toString();
     var httpHooks = new HttpHooks();
-    httpHooks.onNoMatch(function (httpContext) {
+    httpHooks.noMatchHandler(function (httpContext) {
         done(new Error('Expected hook to be found and invoked'));
     });
     httpHooks.addHook({
@@ -895,7 +891,7 @@ function validateMultipleResponderHooksInvokeWithSuccessResponse(done, method) {
     };
     var data = dataBuffer.toString();
     var httpHooks = new HttpHooks();
-    httpHooks.onNoMatch(function (httpContext) {
+    httpHooks.noMatchHandler(function (httpContext) {
         if (!foundError) {
             done(new Error('Expected hook to be found and invoked'));
         }
@@ -1035,7 +1031,7 @@ describe('HttpHooks', function () {
                 'postResponseListener', 'postResponder', 'postPreResponder', 'postPostResponder',
                 'delete', 'deleteListener', 'deleteRequestListener', 'deletePreListener', 'deletePostListener',
                 'deleteResponseListener', 'deleteResponder', 'deletePreResponder', 'deletePostResponder',
-                'dispatch', 'onNoMatch', 'asObserver'
+                'dispatch', 'noMatchHandler', 'asObserver'
             ];
             var httpHooks = new HttpHooks();
             instanceFunctions.forEach(function (fn) {
@@ -4943,11 +4939,11 @@ describe('HttpHooks', function () {
         });
     });
 
-    describe('#onNoMatch(value)', function () {
+    describe('#noMatchHandler(value)', function () {
         it('should not throw an error when a valid argument is provided', function () {
             validNoMatchCallbackValues.forEach(function (callback) {
                 var httpHooks = new HttpHooks();
-                httpHooks.onNoMatch(callback);
+                httpHooks.noMatchHandler(callback);
             });
         });
 
@@ -4956,7 +4952,7 @@ describe('HttpHooks', function () {
                 var error = false;
                 var httpHooks = new HttpHooks();
                 try {
-                    httpHooks.onNoMatch(callback);
+                    httpHooks.noMatchHandler(callback);
                 } catch (e) {
                     error = true;
                 }
@@ -4970,7 +4966,7 @@ describe('HttpHooks', function () {
                 var error = false;
                 var httpHooks = new HttpHooks();
                 try {
-                    httpHooks.onNoMatch(callback);
+                    httpHooks.noMatchHandler(callback);
                 } catch (e) {
                     error = true;
                 }
@@ -5001,7 +4997,7 @@ describe('HttpHooks', function () {
 
         it('should not throw any errors whenever there is no matching hook and a no match listener', function (done) {
             var httpHooks = new HttpHooks();
-            httpHooks.onNoMatch(function (httpContext) {
+            httpHooks.noMatchHandler(function (httpContext) {
                 httpContext.response.writeHead(500, { 'Content-Type': 'text/html' });
                 httpContext.response.write('Internal Server Error Brah!');
                 httpContext.response.end();

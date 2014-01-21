@@ -55,7 +55,6 @@ server.listen(8080);
 * [API reference](./doc/api.md)
 
 ## TODO
-* Update hooks in-memory collection to use [collections](https://github.com/montagejs/collections) instead of [dict](https://github.com/domenic/dict) while taking into account optimizing for search on paths.
 * Add defaultResponderCallback options to constructor to allow request to always be serviced (e.g. hit storage on non-existing hook).
 * Add runtime hook management through HTTP ~/httphooks topic.
 * Design and implement push mechanism for mobile devices using [Azure notification hub service](http://www.windowsazure.com/en-us/documentation/articles/notification-hubs-nodejs-how-to-use-notification-hubs/).
