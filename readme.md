@@ -17,10 +17,11 @@ With `httphooks` you are able to associate logical units for execution with url 
 
 ```js
 var http = require('http');
-var httpHooks = new (require('httphooks'))();
+var HttpHooks = new require('httphooks');
+var hooks = new HttpHooks();
 
 // Respond to any incoming requests with a hello world message which includes the url path
-httpHooks.get('/*', function (hookContext, done) {
+hooks.get('/*', function (hookContext, done) {
     var request = hookContext.request;
     var response = hookContext.response;
     hookContext.setResponse(
@@ -31,7 +32,7 @@ httpHooks.get('/*', function (hookContext, done) {
 });
 
 var server = http.createServer(function (request, response) {
-    httpHooks.dispatch({request: request, response: response});
+    hooks.dispatch({request: request, response: response});
 });
 
 server.listen(8080);
