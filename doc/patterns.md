@@ -12,5 +12,3 @@
 6. [Post-responder](./patterns/postResponders.md)
 7. [Response-listener](./patterns/responseListeners.md)
 8. [Remote](./patterns/remoteHooks.md)
-
-
