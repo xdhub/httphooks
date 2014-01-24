@@ -58,7 +58,7 @@ server.listen(8080);
 * [API reference](./doc/api.md)
 
 ## TODO
-* Design and implement support for real-time communication using [socket.io](http://socket.io).
+* Add socket.io support tests.
 * Design and implement push mechanism example for devices using [Azure notification hub service](http://www.windowsazure.com/en-us/documentation/articles/notification-hubs-nodejs-how-to-use-notification-hubs/).
 * Research, design and implement authentication using JWT [JSON Web Token](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-14) or OAuth2.
 * Design and implement Policy using [edge.js](https://github.com/tjanczuk/edge) as the communication bridge.
