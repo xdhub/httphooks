@@ -109,8 +109,9 @@ describe('ServerResponse', function () {
                     response.statusCode.should.equal(expectedResponse.statusCode);
                     response.headers.should.have.properties(['Content-Type', 'Date']);
                     response.headers['Content-Type'].should.equal(expectedResponse.headers['Content-Type']);
-                    response.content.should.be.an.Array.of.length(1);
-                    response.content[0].should.eql(expectedResponse.content);
+                    response.content.should.be.a.String;
+                    var parsedContent = JSON.parse(response.content);
+                    parsedContent.should.eql(expectedResponse.content);
                     done();
                 });
             });
