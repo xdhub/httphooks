@@ -39,7 +39,8 @@ server.listen(8080);
 ```
 
 ## Features
-* Integrates and standardizes on default primitives defined by the node.js http server.
+* Integrates and standardizes on default primitives defined by the HTTP protocol.
+* Interfaces with node.js http server as well as [socket.io](http://socket.io).
 * By default, supports the four main HTTP verbs: GET, PUT, POST and DELETE.
 * Leverages [route-pattern](https://github.com/bjoerge/route-pattern) to define the resource locations to hook on.
 * Well defined execution and inter-communication model for logical units.
