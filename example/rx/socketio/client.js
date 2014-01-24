@@ -1,21 +1,19 @@
-var io = require('socket.io-client');
-var socket = io.connect('http://127.0.0.1:8082');
+var socket = require('socket.io-client').connect('http://' + process.env.IP + ':' + process.env.PORT);
+var request = {
+    method: 'GET',
+    url: '/hook',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    content: JSON.stringify({
+        message: 'Hello World'
+    })
+};
 socket.on('connect', function () {
-    console.log('Client connected!');
     socket.emit(
         'request',
-        {
-            method: 'GET',
-            url: '/hook',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            content: {
-                message: 'Hello World'
-            }
-        },
+        request,
         function (response) {
-            console.log('response: ' + JSON.stringify(response));
+            console.log('Response: ' + JSON.stringify(response));
         });
 });
-

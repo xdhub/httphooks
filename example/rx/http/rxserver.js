@@ -15,15 +15,6 @@ httpHooks.getResponder('/test', function (hookContext, done) {
     hookContext.setResponse(200, { 'Content-Type': 'text/html' }, content);
     done();
 });
+
 var httpHooksObserver = httpHooks.asObserver();
-var requestSubscription2 = serverObservable.subscribe(
-    function (x) {
-        console.log('Next: ' + x);
-    },
-    function (err) {
-        console.log('Error: ' + err);
-    },
-    function () {
-        console.log('Completed');
-    });
 var requestSubscription = serverObservable.subscribe(httpHooksObserver)

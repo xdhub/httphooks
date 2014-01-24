@@ -1,18 +1,20 @@
 var rxsocketio = require('./rxsocketio');
 var serverObservable = rxsocketio.createServer(parseInt(process.env.PORT));
-console.log(process.env.IP + ':' + process.env.PORT);
+var httpHooks = new (require('../../../lib/httphooks.js'))();
 
-var connectionSubscription = serverObservable.subscribe(
-    function (x) {
-        console.log('Next: ' + x);
-        x.on('request', function (request, functor) {
-            console.log('request: ' + JSON.stringify(request));
-            functor({ statusCode: 200, headers: { 'Content-Type': 'application/json' }, content: {}});
-        });
-    },
-    function (err) {
-        console.log('Error: ' + err);
-    },
-    function () {
-        console.log('Completed');
-    });
+httpHooks.getResponder('/*', function (hookContext, done) {
+    var content = 'Welcome to \'' + hookContext.request.url.path + '\'... Hello world! :)';
+    hookContext.setResponse(200, { 'Content-Type': 'text/html' }, content);
+    done();
+});
+httpHooks.getResponder('/test', function (hookContext, done) {
+    var content = 'Welcome to \'' + hookContext.request.url.path + '\'... Hello world! :)';
+    hookContext.setResponse(200, { 'Content-Type': 'text/html' }, content);
+    done();
+});
+
+serverObservable.server.on('connection', function (socket) {
+    httpHooks.dispatch({webSocket: socket});
+});
+
+console.log(process.env.IP + ':' + process.env.PORT);
