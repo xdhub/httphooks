@@ -51,7 +51,7 @@ describe('ServerResponse', function () {
         });
     });
 
-    describe.only('End-to-end', function () {
+    describe('End-to-end', function () {
         before(function () {
             if (typeof process.env.PORT !== 'string') {
                 throw new Error('Expected PORT environment variable to be set before executing tests: e.g. 8080');
@@ -74,7 +74,6 @@ describe('ServerResponse', function () {
         });
 
         it('should correctly return the expected response', function (done) {
-            this.timeout(10000);
             var expectedRequest = {
                 method: 'GET',
                 url: '/hook',
@@ -107,7 +106,6 @@ describe('ServerResponse', function () {
 
             client.on('connect', function () {
                 client.emit('request', expectedRequest, function (response) {
-
                     response.statusCode.should.equal(expectedResponse.statusCode);
                     response.headers.should.have.properties(['Content-Type', 'Date']);
                     response.headers['Content-Type'].should.equal(expectedResponse.headers['Content-Type']);

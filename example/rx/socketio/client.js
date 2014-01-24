@@ -17,5 +17,5 @@ socket.on('connect', function () {
         function (response) {
             console.log('response: ' + JSON.stringify(response));
         });
-})
+});
 
