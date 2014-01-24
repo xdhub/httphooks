@@ -6,11 +6,6 @@ httpHooks.getResponder('/*', function (hookContext, done) {
     hookContext.setResponse(200, { 'Content-Type': 'text/html' }, content);
     done();
 });
-httpHooks.getResponder('/test', function (hookContext, done) {
-    var content = 'Welcome to \'' + hookContext.request.url.path + '\'... Hello world! :)';
-    hookContext.setResponse(200, { 'Content-Type': 'text/html' }, content);
-    done();
-});
 
 io.on('connection', function (socket) {
     httpHooks.dispatch({webSocket: socket});
