@@ -427,7 +427,7 @@ function validatePreResponderHookSuccessBeforeResponderHookInvoke(done, method) 
             httpContext.should.have.properties([ 'request', 'response' ]);
             httpContext.should.have.property('responseQueue');
             httpContext.response.statusCode.should.equal(200);
-            httpContext.response.headers.should.eql({ 'Content-Length': responseDataBuffer.length });
+            httpContext.response._headers.should.eql({ 'Content-Length': responseDataBuffer.length });
             httpContext.response._data.should.not.be.empty;
             httpContext.response._data.should.have.a.lengthOf(1);
             httpContext.response._data[0].toString().should.equal(responseDataBuffer.toString());
@@ -523,7 +523,7 @@ function validatePostResponderHookSuccessAfterResponderHookInvoke(done, method) 
             httpContext.should.have.properties([ 'request', 'response' ]);
             httpContext.should.have.property('responseQueue');
             httpContext.response.statusCode.should.equal(200);
-            httpContext.response.headers.should.eql({ 'Content-Length': responseDataBuffer.length });
+            httpContext.response._headers.should.eql({ 'Content-Length': responseDataBuffer.length });
             httpContext.response._data.should.not.be.empty;
             httpContext.response._data.should.have.a.lengthOf(1);
             httpContext.response._data[0].toString().should.equal(responseDataBuffer.toString());
@@ -599,7 +599,7 @@ function validatePreResponderHookFailureBeforeResponderHookInvoke(done, method) 
             httpContext.should.have.properties([ 'request', 'response' ]);
             httpContext.should.have.property('responseQueue');
             httpContext.response.statusCode.should.equal(400);
-            httpContext.response.headers.should.eql({ 'Content-Length': responseDataBuffer.length });
+            httpContext.response._headers.should.eql({ 'Content-Length': responseDataBuffer.length });
             httpContext.response._data.should.not.be.empty;
             httpContext.response._data.should.have.a.lengthOf(1);
             httpContext.response._data[0].toString().should.equal(responseData);
@@ -701,7 +701,7 @@ function validatePostResponderHookFailureAfterResponderHookInvoke(done, method) 
             httpContext.should.have.properties([ 'request', 'response' ]);
             httpContext.should.have.property('responseQueue');
             httpContext.response.statusCode.should.equal(400);
-            httpContext.response.headers.should.eql({ 'Content-Length': responseDataBuffer.length });
+            httpContext.response._headers.should.eql({ 'Content-Length': responseDataBuffer.length });
             httpContext.response._data.should.not.be.empty;
             httpContext.response._data.should.have.a.lengthOf(1);
             httpContext.response._data[0].toString().should.equal(responseData);
@@ -802,7 +802,7 @@ function validatePreResponderHookContinueBeforeResponderHookInvoke(done, method)
             httpContext.should.have.properties([ 'request', 'response' ]);
             httpContext.should.have.property('responseQueue');
             httpContext.response.statusCode.should.equal(200);
-            httpContext.response.headers.should.eql({ 'Content-Length': responseDataBuffer.length });
+            httpContext.response._headers.should.eql({ 'Content-Length': responseDataBuffer.length });
             httpContext.response._data.should.not.be.empty;
             httpContext.response._data.should.have.a.lengthOf(1);
             httpContext.response._data[0].toString().should.equal(responseData);
@@ -904,7 +904,7 @@ function validatePostResponderHookContinueAfterResponderHookInvoke(done, method)
             httpContext.should.have.properties([ 'request', 'response' ]);
             httpContext.should.have.property('responseQueue');
             httpContext.response.statusCode.should.equal(200);
-            httpContext.response.headers.should.eql({
+            httpContext.response._headers.should.eql({
                 'Content-Type': 'application/json',
                 'X-Header-Me': 'woot',
                 'Content-Length': continueDataBuffer.length });
@@ -1008,10 +1008,10 @@ function validateMultipleResponderHooksInvokeWithSuccessResponse(done, method) {
                 httpContext.should.have.properties([ 'request', 'response' ]);
                 httpContext.should.have.property('responseQueue');
                 httpContext.response.statusCode.should.equal(202);
-                httpContext.response.headers.should.have.properties(['Content-Type', 'Content-Length']);
+                httpContext.response._headers.should.have.properties(['Content-Type', 'Content-Length']);
                 httpContext.response._data.should.not.be.empty;
                 httpContext.response._data.should.have.a.lengthOf(1);
-                var multipart = Multipart.parse(httpContext.response.headers, httpContext.response._data[0].toString());
+                var multipart = Multipart.parse(httpContext.response._headers, httpContext.response._data[0].toString());
                 multipart.should.have.properties(['subtype', 'boundaryValue', 'parts', 'preamble', 'epilogue', 'headers']);
                 multipart.subtype.should.equal('mixed');
                 multipart.parts.should.not.be.empty;
