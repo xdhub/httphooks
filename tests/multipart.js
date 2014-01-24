@@ -1,5 +1,5 @@
 var should = require('should');
-var Multipart = require('../lib/multipart.js');
+var Multipart = require('../lib/common/multipart.js');
 var validBoundaryValues = [
     'a', '123', 'a b', '\'', '(', ')', '+',
     '_', ',', '-', '.', '/', ':', '=', '?',

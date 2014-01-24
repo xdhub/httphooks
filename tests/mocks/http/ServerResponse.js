@@ -29,15 +29,15 @@ var ServerResponse = function (options) {
 util.inherits(ServerResponse, EventEmitter);
 
 ServerResponse.prototype.getHeader = function (name) {
-    return this._headers[name];
+    return this.headers[name];
 };
 
 ServerResponse.prototype.setHeader = function (name, value) {
-    this._headers[name] = value;
+    this.headers[name] = value;
 };
 
 ServerResponse.prototype.removeHeader = function (name) {
-    delete this._headers[name];
+    delete this.headers[name];
 };
 
 ServerResponse.prototype.writeHead = function (statusCode, reasonPhrase, headers) {

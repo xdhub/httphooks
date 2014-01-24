@@ -1,5 +1,5 @@
 var rxhttp = require('./rxhttp');
-var httpHooks = new (require('../../lib/httphooks.js'))();
+var httpHooks = new (require('../../../lib/httphooks.js'))();
 
 var serverObservable = rxhttp.createServer();
 serverObservable.server.listen(process.env.PORT);

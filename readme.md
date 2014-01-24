@@ -45,8 +45,9 @@ server.listen(8080);
 * Well defined execution and inter-communication model for logical units.
 * Clean separation between listener and responder for compute or I/O logical units.
 * Inline, file (e.g. file:) or remote (e.g. http: or https:) hook definition of logical execution units.
-* Handling of non-matching requests to hooks.
-* Supports detection and collapsing of multiple responses into a single multipart response.
+* Default responder support allowing any request to be serviced when no matching hook is found.
+* Handling of non-matching requests to hooks (when no default responder is set).
+* Supports detection and collapsing of multiple responses into a single multipart response (by default).
 * Large amount of documentation including design, common use patterns, code examples and API references.
 * Large test suite exercising features.
 
