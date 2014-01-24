@@ -60,7 +60,7 @@ server.listen(8080);
 ## TODO
 * Add socket.io support tests.
 * Design and implement push mechanism example for devices using [Azure notification hub service](http://www.windowsazure.com/en-us/documentation/articles/notification-hubs-nodejs-how-to-use-notification-hubs/).
-* Research, design and implement authentication using JWT [JSON Web Token](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-14) or OAuth2.
+* Research, design and implement authentication using [JSON Web Token](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-14) ([node-jsonwebtoken](https://github.com/auth0/node-jsonwebtoken))or OAuth2.
 * Design and implement Policy using [edge.js](https://github.com/tjanczuk/edge) as the communication bridge.
 * Review [nodejx](http://nodejx.com/) and analyze integration possibilities (after 24th of January 2014, when it is released).
 * Add runtime hook management through HTTP ~/httphooks topic.
