@@ -13,13 +13,13 @@
     "route-pattern": ">= 0.0.6",
     "debug": ">= 0.7.3",
     "request": ">= 2.0.0",
-    "socket.io": ">= 0.9.16"
+    "socket.io": ">= 0.9.16",
+    "socket.io-client": ">= 0.9.16"
   },
   "devDependencies": {
      "mocha": "*",
      "should": "*",
-     "jsdox": "*",
-     "socket.io-client": "*"
+     "jsdox": "*"
   },
   "scripts": {
     "test": "mocha --recursive tests",
