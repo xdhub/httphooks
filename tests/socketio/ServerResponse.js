@@ -53,8 +53,8 @@ describe('ServerResponse', function () {
 
     describe('End-to-end', function () {
         before(function () {
-            if (typeof process.env.PORT !== 'string') {
-                throw new Error('Expected PORT environment variable to be set before executing tests: e.g. 8080');
+            if (typeof process.env.PORT1 !== 'string') {
+                throw new Error('Expected PORT1 environment variable to be set before executing tests: e.g. 8080');
             }
         });
 
