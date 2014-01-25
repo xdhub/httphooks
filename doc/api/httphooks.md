@@ -19,11 +19,11 @@ class HttpContext
 
 **response**:  *object*,  The HTTP response object.
 
-class WebSocketContext
-----------------------
+class SocketContext
+-------------------
 **Members**
 
-**socket**:  *object*,  The web socket object.
+**socket**:  *object*,  The socket object.
 
 class HttpHooksOptions
 ----------------------
@@ -524,5 +524,5 @@ Dispatches the context to the corresponding matching hooks.
 
 **Parameters**
 
-**context**:  *HttpContext | WebSocketContext*,  The context that contains the request.
+**context**:  *HttpContext | SocketContext*,  The context that contains the request.
 
