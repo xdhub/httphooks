@@ -2,14 +2,18 @@ RemoteHook Reference
 ====================
 **Author:** Elmar Langholz
 
-RemoteHook(hook)
-----------------
+RemoteHook(url, hookType, \[hookFilter\])
+-----------------------------------------
 Initializes a new instance of the `RemoteHook`.
 
 
 **Parameters**
 
-**hook**:  *Hook*,  The hook to initialize the instance with.
+**url**:  *[URL](http://nodejs.org/api/url.html)*,  The parsed uri.
+
+**hookType**:  *string*,  The hook type.
+
+**[hookFilter]**:  *string[]*,  The filter indicating which hook type to execute remotely.
 
 class RemoteHook
 ----------------

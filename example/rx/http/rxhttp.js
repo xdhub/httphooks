@@ -6,11 +6,11 @@ for(var k in http) {
 
 exports.createServer = function () {
     var subject = new Rx.Subject();
-    var requestListener = function (request, response) {
+    var requestHandler = function (request, response) {
         subject.onNext({ request: request, response:  response });
     };
     var observable = subject.asObservable();
     var publishedObservable = observable.publish();
-    publishedObservable.server = http.createServer(requestListener);
+    publishedObservable.server = http.createServer(requestHandler);
     return publishedObservable;
 };

@@ -17,7 +17,13 @@ class HttpContext
 
 **request**:  *object*,  The HTTP request object.
 
-**response**:  *object*,  The HTTP response object
+**response**:  *object*,  The HTTP response object.
+
+class SocketContext
+-------------------
+**Members**
+
+**socket**:  *object*,  The socket object.
 
 class HttpHooksOptions
 ----------------------
@@ -511,12 +517,12 @@ Sets the function to invoke whenever there are no hooks that match the request.
 
 **cb**:  *function*,  The callback to invoke when there is no matching hook.
 
-HttpHooks.dispatch(httpContext)
--------------------------------
-Dispatches the `httpContext` to the corresponding matching hooks.
+HttpHooks.dispatch(context)
+---------------------------
+Dispatches the context to the corresponding matching hooks.
 
 
 **Parameters**
 
-**httpContext**:  *HttpContext*,  The http context that represents the request.
+**context**:  *HttpContext | SocketContext*,  The context that contains the request.
 

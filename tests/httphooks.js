@@ -1,8 +1,8 @@
 var should = require('should');
 var MockHttp = require('./mocks/http/index.js');
 var HttpHooks = require('../lib/httphooks.js');
-var Multipart = require('../lib/multipart.js');
-var constants = require('../lib/constants.js');
+var Multipart = require('../lib/common/multipart.js');
+var constants = require('../lib/common/constants.js');
 var nonObjectTypes = [ 1, function () {}, 'asdfasdf', false ];
 var nonStringTypes = [ 1, {}, [], function () {}, false ];
 var nonArrayTypes = [ 1, function () {}, {}, 'asdfasdf', false ];
