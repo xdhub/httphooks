@@ -9,7 +9,7 @@ httpHooks.getResponder('/*', function (hookContext, done) {
 });
 
 serverObservable.server.on('connection', function (socket) {
-    httpHooks.dispatch({webSocket: socket});
+    httpHooks.dispatch({socket: socket});
 });
 
 console.log(process.env.IP + ':' + process.env.PORT);

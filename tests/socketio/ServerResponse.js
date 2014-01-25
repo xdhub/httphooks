@@ -99,7 +99,7 @@ describe('ServerResponse', function () {
                         socketResponseCallback: responseCallback
                     });
                     response.writeHead(expectedResponse.statusCode, expectedResponse.headers);
-                    response.write(expectedResponse.content);
+                    response.write(JSON.stringify(expectedResponse.content));
                     response.end();
                 });
             });

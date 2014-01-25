@@ -15,5 +15,12 @@ socket.on('connect', function () {
         request,
         function (response) {
             console.log('Response: ' + JSON.stringify(response));
+            socket.disconnect();
         });
+});
+socket.on('disconnect', function () {
+    console.log('disconnect');
+});
+socket.on('error', function (error) {
+    console.log('error');
 });

@@ -1,7 +1,7 @@
 var socket = require('socket.io-client').connect('http://' + process.env.IP + ':' + process.env.PORT);
 var request = {
     method: 'GET',
-    url: '/hook',
+    url: '/local/hook',
     headers: {
         'Content-Type': 'application/json'
     },
@@ -10,6 +10,7 @@ var request = {
     })
 };
 socket.on('connect', function () {
+    console.log('connect');
     socket.emit(
         'request',
         request,
