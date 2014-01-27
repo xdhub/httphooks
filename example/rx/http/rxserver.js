@@ -1,5 +1,5 @@
 var rxhttp = require('./rxhttp');
-var httpHooks = new (require('../../lib/httphooks.js'))();
+var httpHooks = new (require('../../../lib/httphooks.js'))();
 
 var serverObservable = rxhttp.createServer();
 serverObservable.server.listen(process.env.PORT);
@@ -15,15 +15,6 @@ httpHooks.getResponder('/test', function (hookContext, done) {
     hookContext.setResponse(200, { 'Content-Type': 'text/html' }, content);
     done();
 });
+
 var httpHooksObserver = httpHooks.asObserver();
-var requestSubscription2 = serverObservable.subscribe(
-    function (x) {
-        console.log('Next: ' + x);
-    },
-    function (err) {
-        console.log('Error: ' + err);
-    },
-    function () {
-        console.log('Completed');
-    });
-var requestSubscription = serverObservable.subscribe(httpHooksObserver)
+var requestSubscription = serverObservable.subscribe(httpHooksObserver);

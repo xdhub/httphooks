@@ -1,5 +1,5 @@
 var should = require('should');
-var MultipartParse = require('../lib/multipartParse.js');
+var MultipartParse = require('../lib/common/multipartParse.js');
 var nonObjectTypes = [ 1, function () {}, 'asdfasdf', false ];
 var nonStringTypes = [ 1, {}, [], function () {}, false ];
 var nonFunctionTypes = [ 1, [], {}, 'asdfasdf', false ];
