@@ -25,6 +25,8 @@ class SocketContext
 
 **socket**:  *object*,  The socket object.
 
+**framework**:  *string*,  The socket framework to use: `'socket.io' | 'sockjs'`.
+
 class HttpHooksOptions
 ----------------------
 **Members**

@@ -40,7 +40,7 @@ server.listen(8080);
 
 ## Features
 * Integrates and standardizes on default primitives defined by the HTTP protocol.
-* Interfaces with node.js http server as well as [socket.io](http://socket.io).
+* Interfaces with node.js http server and both [sockjs](https://github.com/sockjs/) and  [socket.io](http://socket.io).
 * By default, supports the four main HTTP verbs: GET, PUT, POST and DELETE.
 * Leverages [route-pattern](https://github.com/bjoerge/route-pattern) to define the resource locations to hook on.
 * Well defined execution and inter-communication model for logical units.
@@ -60,7 +60,7 @@ server.listen(8080);
 ## TODO
 * Add socket.io support tests for remote hooks as well as regular end-to-end ones.
 * Design and implement push mechanism example for devices using [Azure notification hub service](http://www.windowsazure.com/en-us/documentation/articles/notification-hubs-nodejs-how-to-use-notification-hubs/).
-* Research, design and implement authentication using [JSON Web Token](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-14) ([node-jsonwebtoken](https://github.com/auth0/node-jsonwebtoken))or OAuth2.
+* Research, design and implement authentication using [JSON Web Token](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-14) ([node-jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)) or OAuth2.
 * Design and implement Policy using [edge.js](https://github.com/tjanczuk/edge) as the communication bridge.
 * Review [nodejx](http://nodejx.com/) and analyze integration possibilities (after 24th of January 2014, when it is released).
 * Add runtime hook management through HTTP ~/httphooks topic.
