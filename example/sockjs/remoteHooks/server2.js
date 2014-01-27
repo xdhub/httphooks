@@ -1,4 +1,5 @@
-var io = require('socket.io').listen(8081);
+var http = require('http');
+var sockjs = require('sockjs');
 var httpHooks2 = new (require('../../../lib/httphooks.js'))();
 
 httpHooks2.getRequestListener('/remote/hook', function (hookContext, done) {
@@ -17,7 +18,20 @@ httpHooks2.getResponder('/remote/hook', function (hookContext, done) {
     done();
 });
 
-io.on('connection', function (socket) {
-    console.log('connection');
-    httpHooks2.dispatch({socket: socket, framework: 'socket.io'});
+var sockjsServer = sockjs.createServer({ sockjs_url: 'http://cdn.sockjs.org/sockjs-0.3.min.js' });
+sockjsServer.on('connection', function (connection) {
+    console.log('sockjsServer: connection');
+    httpHooks2.dispatch({ socket: connection, framework: 'sockjs' });
 });
+
+var httpServer = http.createServer(function (request, response) {
+    console.log('httpServer: Request received!');
+});
+
+httpServer.on('upgrade', function (request, response) {
+    console.log('httpServer: upgrade');
+    response.end();
+});
+
+httpServer.listen(8081);
+sockjsServer.installHandlers(httpServer);

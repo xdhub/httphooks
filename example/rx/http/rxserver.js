@@ -17,4 +17,4 @@ httpHooks.getResponder('/test', function (hookContext, done) {
 });
 
 var httpHooksObserver = httpHooks.asObserver();
-var requestSubscription = serverObservable.subscribe(httpHooksObserver)
+var requestSubscription = serverObservable.subscribe(httpHooksObserver);
