@@ -58,7 +58,7 @@ server.listen(8080);
 * [API reference](./doc/api.md)
 
 ## TODO
-* Add socket.io support tests for remote hooks as well as regular end-to-end ones.
+* Add sockjs and socket.io support tests for remote hooks as well as regular end-to-end ones.
 * Design and implement push mechanism example for devices using [Azure notification hub service](http://www.windowsazure.com/en-us/documentation/articles/notification-hubs-nodejs-how-to-use-notification-hubs/).
 * Research, design and implement authentication using [JSON Web Token](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-14) ([node-jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)) or OAuth2.
 * Design and implement Policy using [edge.js](https://github.com/tjanczuk/edge) as the communication bridge.
