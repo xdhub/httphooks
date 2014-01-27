@@ -1,14 +1,14 @@
 var should = require('should');
-var ServerResponse = require('../../lib/socketio/ServerResponse.js');
+var ServerSocketResponse = require('../lib/ServerSocketResponse.js');
 
-describe('ServerResponse', function () {
+describe('ServerSocketResponse', function () {
     describe('#Constructor(value)', function() {
         it('should have a default set of publicly accessible functions', function () {
             var instanceFunctions = [
                 'getHeader', 'setHeader', 'removeHeader', 'setEncoding',
                 'writeHead', 'write', 'end'
             ];
-            var response = new ServerResponse();
+            var response = new ServerSocketResponse();
             instanceFunctions.forEach(function (fn) {
                 var typeName = typeof response[fn];
                 typeName.should.equal('function', 'Expected function to be accessible: \'' + fn + '\'');
@@ -22,7 +22,7 @@ describe('ServerResponse', function () {
                 // Read and write properties:
                 'statusCode', 'sendDate'
             ];
-            var response = new ServerResponse();
+            var response = new ServerSocketResponse();
             instanceProperties.forEach(function (property) {
                 var typeName = typeof response[property];
                 typeName.should.not.equal('undefined', 'Expected property to be accessible: \'' + property + '\'');
@@ -30,7 +30,7 @@ describe('ServerResponse', function () {
         });
 
         it('should not throw an error upon no argument being passed for initialization', function () {
-            var response = new ServerResponse();
+            var response = new ServerSocketResponse();
             response.sendDate.should.equal(true);
             response.headersSent.should.equal(false);
             response.statusCode.should.equal(-1);
@@ -44,14 +44,14 @@ describe('ServerResponse', function () {
                     statusCode: 500
                 }
             };
-            var response = new ServerResponse(options);
+            var response = new ServerSocketResponse(options);
             response.sendDate.should.equal(options.properties.sendDate);
             response.headersSent.should.equal(options.properties.headersSent);
             response.statusCode.should.equal(options.properties.statusCode);
         });
     });
 
-    describe('End-to-end', function () {
+    describe('socket.io end-to-end', function () {
         before(function () {
             if (typeof process.env.PORT1 !== 'string') {
                 throw new Error('Expected PORT1 environment variable to be set before executing tests: e.g. 8080');
@@ -61,8 +61,8 @@ describe('ServerResponse', function () {
         var server = null;
         var client = null;
         beforeEach(function () {
-            server = require('socket.io').listen(parseInt(process.env.PORT));
-            client = require('socket.io-client').connect('http://127.0.0.1:' + process.env.PORT);
+            server = require('socket.io').listen(parseInt(process.env.PORT1));
+            client = require('socket.io-client').connect('http://127.0.0.1:' + process.env.PORT1);
         });
 
         afterEach(function () {
@@ -94,9 +94,16 @@ describe('ServerResponse', function () {
             server.sockets.on('connection', function (socket) {
                 socket.on('request', function (request, responseCallback) {
                     request.should.eql(expectedRequest);
-                    var response = new ServerResponse({
-                        socketContext: socket,
-                        socketResponseCallback: responseCallback
+                    socket.responseCallback = responseCallback;
+                    var response = new ServerSocketResponse({
+                        socket: {
+                            context: socket,
+                            sendResponse: function (statusCode, headers, content, context) {
+                                var response = { statusCode: statusCode, headers: headers, content: content };
+                                context.responseCallback(response);
+                            },
+                            closedEventName: 'disconnect'
+                        }
                     });
                     response.writeHead(expectedResponse.statusCode, expectedResponse.headers);
                     response.write(JSON.stringify(expectedResponse.content));

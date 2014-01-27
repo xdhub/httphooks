@@ -8,7 +8,7 @@ httpHooks.getResponder('/*', function (hookContext, done) {
 });
 
 io.on('connection', function (socket) {
-    httpHooks.dispatch({socket: socket});
+    httpHooks.dispatch({socket: socket, framework: 'socket.io'});
 });
 
 console.log(process.env.IP + ':' + process.env.PORT);

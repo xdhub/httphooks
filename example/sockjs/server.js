@@ -1,5 +1,12 @@
 var http = require('http');
 var sockjs = require('sockjs');
+var httpHooks = new (require('../../lib/httphooks.js'))();
+
+httpHooks.getResponder('/*', function (hookContext, done) {
+    var content = 'Welcome to \'' + hookContext.request.url.path + '\'... Hello world! :)';
+    hookContext.setResponse(200, { 'Content-Type': 'text/html' }, content);
+    done();
+});
 
 var sockjsServer = sockjs.createServer({ sockjs_url: 'http://cdn.sockjs.org/sockjs-0.3.min.js' });
 sockjsServer.on('connection', function (connection) {
@@ -15,15 +22,7 @@ sockjsServer.on('connection', function (connection) {
     console.log('connection.prefix = ' + connection.prefix);
     console.log('connection.protocol = ' + connection.protocol);
     console.log('connection.readyState = ' + connection.readyState);
-    connection.on('data', function (message) {
-        console.log('sockjsServer: data');
-        console.log('Message: ' + message);
-        connection.write(message);
-        connection.close();
-    });
-    connection.on('close', function () {
-        console.log('sockjsServer: close');
-    });
+    httpHooks.dispatch({ socket: connection, framework: 'sockjs' });
 });
 
 var httpServer = http.createServer(function (request, response) {

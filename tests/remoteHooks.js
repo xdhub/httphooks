@@ -49,7 +49,7 @@ describe('HttpHooks', function () {
             httpHooks2= null;
         });
 
-        describe('#remoteHooks', function() {
+        describe('#http remoteHooks', function() {
             function validateRemoteHookInvoke(done, method, type) {
                 var foundError = false;
                 var responderContent = method + ' on ' + type;
@@ -262,7 +262,7 @@ describe('HttpHooks', function () {
         });
     });
 
-    describe('socket.io', function () {
+/*    describe('socket.io', function () {
         var ioServer1 = null;
         var httpHooks1 = null;
         var ioServer2 = null;
@@ -274,13 +274,13 @@ describe('HttpHooks', function () {
             httpHooks1 = new HttpHooks();
             ioServer1 = require('socket.io').listen(parseInt(process.env.PORT1));
             ioServer1.on('connection', function (socket) {
-                httpHooks1.dispatch({socket: socket});
+                httpHooks1.dispatch({socket: socket, framework: 'socket.io'});
             });
             httpHooks2 = new HttpHooks();
             ioServer2 = require('socket.io').listen(parseInt(process.env.PORT2));
             ioServer2.on('connection', function (socket) {
                 console.log('-----------------ioServer2 - connection')
-                httpHooks2.dispatch({socket: socket});
+                httpHooks2.dispatch({socket: socket, framework: 'socket.io'});
             });
             clientSocket = require('socket.io-client').connect('http://127.0.0.1:' + process.env.PORT1 + '/', true);
             clientSocket.on('connect', function () {
@@ -310,7 +310,7 @@ describe('HttpHooks', function () {
             ioServer2 = null;
         });
 
-        describe.only('#remoteHooks', function() {
+        describe('#socket.io remoteHooks', function() {
             function validateRemoteHookInvoke(done, method, type) {
                 var foundError = false;
                 var responderContent = method + ' on ' + type;
@@ -322,7 +322,8 @@ describe('HttpHooks', function () {
                     urlPattern: '/local/hook',
                     type: type,
                     callback: {
-                        uri: 'ws://127.0.0.1:' + process.env.PORT2 + '/remote/hook'
+                        uri: 'ws://127.0.0.1:' + process.env.PORT2 + '/remote/hook',
+                        socketFramework: 'socket.io'
                     }
                 };
                 httpHooks1.addHook(hook1);
@@ -523,5 +524,5 @@ describe('HttpHooks', function () {
                 validateRemoteHookInvoke(done, 'DELETE', 'post-responder');
             });
         });
-    });
+    });*/
 });
