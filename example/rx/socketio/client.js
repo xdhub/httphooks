@@ -22,5 +22,5 @@ socket.on('disconnect', function () {
     console.log('disconnect');
 });
 socket.on('error', function (error) {
-    console.log('error');
+    console.log('error: ' + error);
 });

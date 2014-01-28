@@ -8,8 +8,7 @@ httpHooks.getResponder('/*', function (hookContext, done) {
     done();
 });
 
-serverObservable.server.on('connection', function (socket) {
-    httpHooks.dispatch({socket: socket, framework: 'socket.io'});
-});
+var httpHooksObserver = httpHooks.asObserver();
+var requestSubscription = serverObservable.subscribe(httpHooksObserver);
 
 console.log(process.env.IP + ':' + process.env.PORT);
