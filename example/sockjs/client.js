@@ -1,5 +1,5 @@
-var sockjsclient = require('sockjs-client');
-var client = sockjsclient.create('http://127.0.0.1:' + process.env.PORT + '/');
+var sockjsClient = require('sockjs-client');
+var client = sockjsClient.create('http://127.0.0.1:' + process.env.PORT + '/');
 var request = {
     method: 'GET',
     url: '/hook',
