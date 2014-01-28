@@ -18,20 +18,20 @@ httpHooks2.getResponder('/remote/hook', function (hookContext, done) {
     done();
 });
 
-var sockjsServer = sockjs.createServer({ sockjs_url: 'http://cdn.sockjs.org/sockjs-0.3.min.js' });
-sockjsServer.on('connection', function (connection) {
-    console.log('sockjsServer: connection');
+var sockjsServer2 = sockjs.createServer({ sockjs_url: 'http://cdn.sockjs.org/sockjs-0.3.min.js' });
+sockjsServer2.on('connection', function (connection) {
+    console.log('sockjsServe2: connection');
     httpHooks2.dispatch({ socket: connection, framework: 'sockjs' });
 });
 
-var httpServer = http.createServer(function (request, response) {
-    console.log('httpServer: Request received!');
+var httpServer2 = http.createServer(function (request, response) {
+    console.log('httpServer2: Request received!');
 });
 
-httpServer.on('upgrade', function (request, response) {
-    console.log('httpServer: upgrade');
+httpServer2.on('upgrade', function (request, response) {
+    console.log('httpServer2: upgrade');
     response.end();
 });
 
-httpServer.listen(8081);
-sockjsServer.installHandlers(httpServer);
+httpServer2.listen(8081);
+sockjsServer2.installHandlers(httpServer2);

@@ -1,4 +1,4 @@
-var io = require('socket.io').listen(8080);
+var io1 = require('socket.io').listen(8080);
 var httpHooks1 = new (require('../../../lib/httphooks.js'))();
 
 httpHooks1.getResponder(
@@ -9,7 +9,7 @@ httpHooks1.getResponder(
         hookFilter: ['responder']
     });
 
-io.on('connection', function (socket) {
-    console.log('connection');
+io1.on('connection', function (socket) {
+    console.log('io1: connection');
     httpHooks1.dispatch({socket: socket, framework: 'socket.io'});
 });
