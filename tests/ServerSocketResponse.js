@@ -62,7 +62,7 @@ describe('ServerSocketResponse', function () {
         var client = null;
         beforeEach(function () {
             server = require('socket.io').listen(parseInt(process.env.PORT1));
-            client = require('socket.io-client').connect('http://127.0.0.1:' + process.env.PORT1);
+            client = require('socket.io-client').connect('http://127.0.0.1:' + process.env.PORT1, {'force new connection': true});
         });
 
         afterEach(function () {
@@ -121,6 +121,93 @@ describe('ServerSocketResponse', function () {
                     parsedContent.should.eql(expectedResponse.content);
                     done();
                 });
+            });
+        });
+    });
+
+    describe('sockjs end-to-end', function () {
+        before(function () {
+            if (typeof process.env.PORT1 !== 'string') {
+                throw new Error('Expected PORT1 environment variable to be set before executing tests: e.g. 8080');
+            }
+        });
+
+        var httpServer = null;
+        var server = null;
+        var client = null;
+        beforeEach(function () {
+            server = require('sockjs').createServer({ sockjs_url: 'http://cdn.sockjs.org/sockjs-0.3.min.js' });
+            httpServer = require('http').createServer(function (request, response) { });
+            httpServer.on('upgrade', function (request, response) {
+                response.end();
+            });
+
+            httpServer.listen(process.env.PORT1);
+            server.installHandlers(httpServer);
+            client = require('sockjs-client').create('http://127.0.0.1:' + process.env.PORT1 + '/');
+        });
+
+        afterEach(function () {
+            httpServer.close();
+            client.close();
+
+            httpServer = null;
+            server = null;
+            client = null;
+        });
+
+        it('should correctly return the expected response', function (done) {
+            var expectedRequest = {
+                method: 'GET',
+                url: '/hook',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                content: {
+                    message: 'Hello World'
+                }
+            };
+            var expectedResponse = {
+                statusCode: 200,
+                headers: { 'Content-Type': 'application/json' },
+                content: {
+                    message: 'Fences, in a row'
+                }
+            };
+            server.on('connection', function (connection) {
+                connection.on('data', function (requestAsText) {
+                    var request = JSON.parse(requestAsText);
+                    request.should.eql(expectedRequest);
+                    var response = new ServerSocketResponse({
+                        socket: {
+                            context: connection,
+                            sendResponse: function (statusCode, headers, content, context) {
+                                var response = { statusCode: statusCode, headers: headers, content: content };
+                                context.write(JSON.stringify(response));
+                            },
+                            closedEventName: 'close'
+                        }
+                    });
+                    response.writeHead(expectedResponse.statusCode, expectedResponse.headers);
+                    response.write(JSON.stringify(expectedResponse.content));
+                    response.end();
+                });
+            });
+            client.on('connection', function () {
+                client.write(JSON.stringify(expectedRequest));
+            });
+            client.on('data', function (responseAsText) {
+                var response = JSON.parse(responseAsText);
+                response.statusCode.should.equal(expectedResponse.statusCode);
+                response.headers.should.have.properties(['Content-Type', 'Date']);
+                response.headers['Content-Type'].should.equal(expectedResponse.headers['Content-Type']);
+                response.content.should.be.a.String;
+                var parsedContent = JSON.parse(response.content);
+                parsedContent.should.eql(expectedResponse.content);
+                done();
+            });
+            client.on('error', function (error) {
+                done(error);
             });
         });
     });

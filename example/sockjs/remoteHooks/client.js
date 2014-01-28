@@ -14,9 +14,10 @@ client.on('connection', function () {
     console.log('client: connection');
     client.write(JSON.stringify(request));
 });
-client.on('data', function (response) {
+client.on('data', function (responseAsText) {
     console.log('client: data');
-    console.log('Response: ' + response);
+    console.log('Response: ' + responseAsText);
+    var response = JSON.parse(responseAsText);
     client.close();
 });
 client.on('close', function() {

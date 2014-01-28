@@ -45,7 +45,7 @@ server.listen(8080);
 * Leverages [route-pattern](https://github.com/bjoerge/route-pattern) to define the resource locations to hook on.
 * Well defined execution and inter-communication model for logical units.
 * Clean separation between listener and responder for compute or I/O logical units.
-* Inline, file (e.g. file:) or remote (e.g. http: or https:) hook definition of logical execution units.
+* Inline, file (e.g. 'file:') or remote (e.g. 'http:', 'https:' or 'ws:') hook definition of logical execution units.
 * Default responder support allowing any request to be serviced when no matching hook is found.
 * Handling of non-matching requests to hooks (when no default responder is set).
 * Supports detection and collapsing of multiple responses into a single multipart response (by default).
@@ -58,7 +58,6 @@ server.listen(8080);
 * [API reference](./doc/api.md)
 
 ## TODO
-* Add sockjs and socket.io support tests for remote hooks as well as regular end-to-end ones.
 * Design and implement push mechanism example for devices using [Azure notification hub service](http://www.windowsazure.com/en-us/documentation/articles/notification-hubs-nodejs-how-to-use-notification-hubs/).
 * Research, design and implement authentication using [JSON Web Token](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-14) ([node-jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)) or OAuth2.
 * Design and implement Policy using [edge.js](https://github.com/tjanczuk/edge) as the communication bridge.
