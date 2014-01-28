@@ -1,6 +1,8 @@
 # httphooks
 **Author:** Elmar Langholz
 
+In this world of internet of things, we have realized that while there are multiple frameworks, protocols and standards that allow you to intercommunicate between different devices none is more prevalent than the actual ones exposed by and defined through the web. For this reason, this module has the intent of standardizing using HTTP, REST and web sockets with the intent to facilitate connecting logic and data while maintaining its distribution and facilities.
+
 `httphooks` is a [node](http://nodejs.org) HTTP pub-sub architecture that allows you to associate an incoming HTTP request to a single/multiple dependent/independent user defined operations. These operations work in a loosely coupled manner such that together, with a well defined [execution model](./doc/design.md), each collaborate in order to deliver a result. `httphooks` extends the webhooks model to the primary REST HTTP verbs and formalizes request/response, inter-communication and signaling using HTTP as the communication standard.
 
 While there are existing and similar modules (a.k.a middleware), we have a pretty interesting architecture, model and set of features that are not present in others and which allow you to streamline your development. Don't be shy and take a look at our documentation, you just might be pleasantly surprised...
@@ -56,6 +58,7 @@ server.listen(8080);
 * [General design](./doc/design.md)
 * [Common hook usage patterns](./doc/patterns.md)
 * [API reference](./doc/api.md)
+* [Examples](./example)
 
 ## TODO
 * Design and implement push mechanism example for devices using [Azure notification hub service](http://www.windowsazure.com/en-us/documentation/articles/notification-hubs-nodejs-how-to-use-notification-hubs/).
