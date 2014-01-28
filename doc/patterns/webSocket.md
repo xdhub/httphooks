@@ -34,6 +34,35 @@ httpServer.on('upgrade', function (request, response) {
 
 httpServer.listen(process.env.PORT);
 sockjsServer.installHandlers(httpServer);
+
+var sockjsClient = require('sockjs-client');
+var client = sockjsClient.create('http://127.0.0.1:' + process.env.PORT + '/');
+var request = {
+    method: 'GET',
+    url: '/hook',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    content: JSON.stringify({
+        message: 'Hello World'
+    })
+};
+client.on('connection', function () {
+    console.log('client: connection');
+    client.write(JSON.stringify(request));
+});
+client.on('data', function (response) {
+    console.log('client: data');
+    console.log('Response: ' + response);
+    client.close();
+});
+client.on('close', function() {
+    console.log('client: close');
+});
+client.on('error', function (error) {
+    console.log('client: error');
+    console.log('Error: ' + error);
+});
 ```
 
 ## Using socket.io
@@ -53,4 +82,31 @@ io.on('connection', function (socket) {
 });
 
 console.log(process.env.IP + ':' + process.env.PORT);
+
+var socket = require('socket.io-client').connect('http://' + process.env.IP + ':' + process.env.PORT);
+var request = {
+    method: 'GET',
+    url: '/hook',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    content: JSON.stringify({
+        message: 'Hello World'
+    })
+};
+socket.on('connect', function () {
+    socket.emit(
+        'request',
+        request,
+        function (response) {
+            console.log('Response: ' + JSON.stringify(response));
+            socket.disconnect();
+        });
+});
+socket.on('disconnect', function () {
+    console.log('disconnect');
+});
+socket.on('error', function (error) {
+    console.log('error');
+});
 ```
