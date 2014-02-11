@@ -9,11 +9,10 @@ httpHooks.getResponder('/*', function (hookContext, done) {
                 response.statusCode,
                 { 'Content-Type': 'text/html' },
                 'Welcome to \'' + hookContext.request.url.path + '\'... Hello world! :)');
-            done();
         } else {
-            hookContext.setResponse(response.statusCode);
-            done();
+            hookContext.setResponse(response.statusCode);    
         }
+        done();
     });
 });
 
