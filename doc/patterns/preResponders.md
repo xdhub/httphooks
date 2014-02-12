@@ -72,7 +72,7 @@ httpHooks.getPreResponder(urlPattern, function (hookContext, done) {
     done();
 });
 
-httpHooks.getInResponder(urlPattern, function (hookContext, done) {
+httpHooks.getResponder(urlPattern, function (hookContext, done) {
     // Convert back the content to an object
     var user = JSON.parse(hookContext.request.content);
     var content = 'Welcome to \'' + hookContext.request.url.path + '\'...'

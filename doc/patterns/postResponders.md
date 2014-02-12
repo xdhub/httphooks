@@ -10,7 +10,7 @@ var http = require('http');
 var httpHooks = new (require('httphooks'))();
 var urlPattern = '/*';
 
-httpHooks.getInResponder(urlPattern, function (hookContext, done) {
+httpHooks.getResponder(urlPattern, function (hookContext, done) {
     var myObject = {
         name: hookContext.request.query.name
     };

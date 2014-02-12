@@ -47,19 +47,19 @@ Each hook type can be defined to execute in one of the following stages:
   <tr>
     <th>Pre-Processing</th>
     <td>
-        Refers to execution a hook before the processing and post-processing stages (in the listed order). If the hook is a responder then it is expected that it validates and/or normalizes the request content input. If the hook is a listener then it is expected that it signals or forward the response of the processed (validation and/or normalization) request content that just occurred.
+        Refers to execution of a hook before the processing and post-processing stages (in the listed order). If the hook is a responder then it is expected that it validates and/or normalizes the request content input. If the hook is a listener then it is expected that it signals or forward the response of the processed (validation and/or normalization) request content that just occurred.
     </td>
   </tr>
   <tr>
     <th>Processing</th>
     <td>
-        Refers to execution a hook after the pre-processing stage, but before the post-processing stage. If the hook is a responder then it is expected that it processes the request. There should be no listener hooks at this stage.
+        Refers to execution of a hook after the pre-processing stage, but before the post-processing stage. If the hook is a responder then it is expected that it processes the request. There should be no listener hooks at this stage.
     </td>
   </tr>
   <tr>
     <th>Post-Processing</th>
     <td>
-        Refers to execution a hook after the pre-processing and processing stages (in the listed order). If the hook is a responder then it is expected that it enhances and/or normalizes the request content output. If the hook is a listener then it is expected that it signals or forward the response of the processed (enhancement and/or normalization) request content that just occurred.
+        Refers to execution of a hook after the pre-processing and processing stages (in the listed order). If the hook is a responder then it is expected that it enhances and/or normalizes the request content output. If the hook is a listener then it is expected that it signals or forward the response of the processed (enhancement and/or normalization) request content that just occurred.
     </td>
   </tr>
   <tr>

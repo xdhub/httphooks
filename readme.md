@@ -7,12 +7,6 @@ In this world of internet of things, we have realized that while there are multi
 
 While there are existing and similar modules (a.k.a middleware), we have a pretty interesting architecture, model and set of features that are not present in others and which allow you to streamline your development. Don't be shy and take a look at our documentation, you just might be pleasantly surprised...
 
-## Installation
-
-```
-npm install httphooks
-```
-
 ## Usage
 
 With `httphooks` you are able to associate logical units for execution with url paths with a given HTTP verb.
@@ -70,3 +64,4 @@ server.listen(8080);
 * Replace custom validation with [schema-inspector](http://atinux.github.io/schema-inspector/).
 * Add support for automated parsing based on Content-Type.
 * Add support for other HTTP verbs such as: HEAD and PATCH.
+* May want to extract the WebSockets (sockjs, socket.io) as an optional add-on, making httphooks itself a bit more lightweight
