@@ -8,15 +8,17 @@ In this world of internet of things, we have realized that while there are multi
 While there are existing and similar modules (a.k.a middleware), we have a pretty interesting architecture, model and set of features that are not present in others and which allow you to streamline your development. Don't be shy and take a look at our documentation, you just might be pleasantly surprised...
 
 ## Tests
-In order to successfully run the tests you'll need to make sure to set two environment variables, <code>PORT1</code> and <code>PORT2</code>. From the command line, it looks like this:
-> <code>env$:PORT1=8080</code>  
-> <code>env$:PORT2=8081</code>  
-
-They'll need to be on different port numbers for the tests to complete successfully. We've also made a note in the Todo section to change the tests to automatically default to 8080/8081 if they've not been set.
-
 ##### Running the tests
 The test suite can be invoked from the command line like this:  
 > <code>npm test</code>  
+
+##### Some details about the tests
+In order to successfully run the tests three environment variables are used for setting the port numbers: <code>PORT</code>, <code>PORT1</code> and <code>PORT2</code>. 
+
+* <code>PORT</code> and <code>PORT1</code> default to <code>8080</code>
+* <code>PORT2</code> defaults to <code>8081</code>
+
+For now, if you want to use different port numbers, you'll have to modify the values in the <code>./tests/runTests.js</code> file. When time permits we'll change this so it can be done in some other manner (i.e. via a JSON file, command-line options, etc.).
 
 
 ## Usage
@@ -77,4 +79,4 @@ server.listen(8080);
 * Add support for automated parsing based on Content-Type.
 * Add support for other HTTP verbs such as: HEAD and PATCH.
 * Extract the WebSockets (sockjs, socket.io) as an optional add-on to make httphooks more lightweight
-* In the tests, default to PORT1=8080 & PORT2=8081 if they've not been set
+* Provide a means for easily setting the port numbers used by the unit tests. Something other than having to manually edit the values in <code>./tests/runTests.js</code>.
