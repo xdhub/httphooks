@@ -3,7 +3,7 @@
 
 ## Pre-processed augmented/validated request signaling
 
-Pre-listener hooks are commonly used to signal and/or background processing the previously validated/augmented request. This means that for the associated url path we can be sure that we will have the actual augmented/validated request before processing. In the code snippet below, we count the number of request issued so that when we reached a threshold we log that we have reached the maximum, clear the count and start counting again.
+Pre-listener hooks are commonly used to signal and/or begin background processing on the previously validated/augmented request. This means that for the associated url path we can be sure that we will have the actual augmented/validated request before processing. In the code snippet below, we count the number of requests issued so that when we reached a threshold we log that we have reached the maximum, clear the count and start counting again.
 
 ```js
 var http = require('http');

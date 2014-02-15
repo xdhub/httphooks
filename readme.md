@@ -13,6 +13,20 @@ While there are existing and similar modules (a.k.a middleware), we have a prett
 npm install httphooks
 ```
 
+## Tests
+##### Running the tests
+The test suite can be invoked from the command line like this:  
+> <code>npm test</code>  
+
+##### Some details about the tests
+In order to successfully run the tests three environment variables are used for setting the port numbers: <code>PORT</code>, <code>PORT1</code> and <code>PORT2</code>. 
+
+* <code>PORT</code> and <code>PORT1</code> default to <code>8080</code>
+* <code>PORT2</code> defaults to <code>8081</code>
+
+For now, if you want to use different port numbers, you'll have to modify the values in the <code>./tests/runTests.js</code> file. When time permits we'll change this so it can be done in some other manner (i.e. via a JSON file, command-line options, etc.).
+
+
 ## Usage
 
 With `httphooks` you are able to associate logical units for execution with url paths with a given HTTP verb.
@@ -70,3 +84,5 @@ server.listen(8080);
 * Replace custom validation with [schema-inspector](http://atinux.github.io/schema-inspector/).
 * Add support for automated parsing based on Content-Type.
 * Add support for other HTTP verbs such as: HEAD and PATCH.
+* Extract the WebSockets (sockjs, socket.io) as an optional add-on to make httphooks more lightweight
+* Provide a means for easily setting the port numbers used by the unit tests. Something other than having to manually edit the values in <code>./tests/runTests.js</code>.
