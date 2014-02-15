@@ -7,11 +7,11 @@ In this world of internet of things, we have realized that while there are multi
 
 While there are existing and similar modules (a.k.a middleware), we have a pretty interesting architecture, model and set of features that are not present in others and which allow you to streamline your development. Don't be shy and take a look at our documentation, you just might be pleasantly surprised...
 
--## Installation
--
--```
--npm install httphooks
--```
+## Installation
+
+```
+npm install httphooks
+```
 
 ## Tests
 ##### Running the tests
