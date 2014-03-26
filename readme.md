@@ -72,3 +72,16 @@ server.listen(8080);
 * [Common hook usage patterns](./doc/patterns.md)
 * [API reference](./doc/api.md)
 * [Examples](./example)
+
+## TODO
+* Design and implement push mechanism example for devices using [Azure notification hub service](http://www.windowsazure.com/en-us/documentation/articles/notification-hubs-nodejs-how-to-use-notification-hubs/).
+* Research, design and implement authentication using [JSON Web Token](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-14) ([node-jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)) or OAuth2.
+* Design and implement Policy using [edge.js](https://github.com/tjanczuk/edge) as the communication bridge.
+* Review [nodejx](http://nodejx.com/) and analyze integration possibilities (after 24th of January 2014, when it is released).
+* Add runtime hook management through HTTP ~/httphooks topic.
+* Add [sandbox.js](http://gf3.github.io/sandbox/) for function callbacks.
+* Replace custom validation with [schema-inspector](http://atinux.github.io/schema-inspector/).
+* Add support for automated parsing based on Content-Type.
+* Add support for other HTTP verbs such as: HEAD and PATCH.
+* Extract the WebSockets (sockjs, socket.io) as an optional add-on to make httphooks more lightweight
+* Provide a means for easily setting the port numbers used by the unit tests. Something other than having to manually edit the values in <code>./tests/runTests.js</code>.
