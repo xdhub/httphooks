@@ -1,5 +1,4 @@
 # httphooks
-**Author:** Elmar Langholz
 
 In this world of internet of things, we have realized that while there are multiple frameworks, protocols and standards that allow you to intercommunicate between different devices none is more prevalent than the actual ones exposed by and defined through the web. For this reason, this module has the intent of standardizing using HTTP, REST and web sockets with the intent to facilitate connecting logic and data while maintaining its distribution and facilities.
 

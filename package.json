@@ -2,9 +2,7 @@
     "name": "httphooks",
     "author": "Microsoft Corporation",
     "contributors": [
-        "Langholz, Elmar <elan@microsoft.com>",
-        "Ermel, Keith <keermel@microsoft.com>",
-        "Wagle, Justin <justiwag@microsoft.com>"
+        "Langholz, Elmar <elan@microsoft.com>"
     ],
     "description": "A webhook implementation which extends the concept to HTTP REST API's",
     "version": "0.0.1",
